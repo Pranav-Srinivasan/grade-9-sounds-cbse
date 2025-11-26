@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sound & Waves - Interactive Revision</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            min-height: 100vh;
+        }
+
+        /* Navigation - High Contrast */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .nav a {
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .nav a:hover, .nav a.active {
+            color: #00bcd4;
+        }
+
+        .nav-title {
+            color: #00bcd4;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-right: auto;
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 80px;
+        }
+
+        section {
+            min-height: 100vh;
+            padding: 3rem;
+            border-bottom: 4px solid #ddd;
+            background: #fff;
+        }
+
+        section:nth-child(even) {
+            background: #fafafa;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            color: #0077aa;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin: 2.5rem 0 1rem;
+            color: #005577;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 1.5rem 0 0.75rem;
+            color: #0077aa;
+        }
+
+        .section-number {
+            font-size: 1rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #333;
+            max-width: 900px;
+            margin-bottom: 1rem;
+        }
+
+        .highlight {
+            color: #d32f2f;
+            font-weight: 700;
+            background: #ffebee;
+            padding: 0.1em 0.3em;
+            border-radius: 4px;
+        }
+
+        /* Canvas Container - High Contrast */
+        .canvas-container {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 3px solid #333;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .canvas-container canvas {
+            display: block;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .canvas-label {
+            font-size: 1rem;
+            color: #aaa;
+            margin-top: 0.75rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Controls - Larger for visibility */
+        .controls {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-size: 1rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 220px;
+            height: 10px;
+            -webkit-appearance: none;
+            background: #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #0077aa;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .value-display {
+            font-size: 1.3rem;
+            color: #0077aa;
+            font-weight: 700;
+            min-width: 100px;
+        }
+
+        /* Buttons - Large and Bold */
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: #0077aa;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,119,170,0.4);
+        }
+
+        .btn-primary:hover {
+            background: #005580;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #0077aa;
+            border: 3px solid #0077aa;
+        }
+
+        .btn-secondary:hover {
+            background: #e3f2fd;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+            box-shadow: 0 4px 12px rgba(211,47,47,0.4);
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        /* Split View */
+        .split-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        @media (max-width: 1000px) {
+            .split-view {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .split-panel {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 3px solid #333;
+        }
+
+        .split-panel h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #00bcd4;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .split-panel p {
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+
+        /* Key Points Box - High Visibility */
+        .key-point {
+            background: #e3f2fd;
+            border-left: 6px solid #0077aa;
+            padding: 1.5rem 2rem;
+            margin: 1.5rem 0;
+            border-radius: 0 12px 12px 0;
+            font-size: 1.2rem;
+        }
+
+        .key-point strong {
+            color: #0077aa;
+        }
+
+        /* Examples Box */
+        .examples-box {
+            background: #fff3e0;
+            border: 3px solid #ff9800;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .examples-box h4 {
+            color: #e65100;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .example-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .example-icon {
+            font-size: 2rem;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .example-content h5 {
+            color: #e65100;
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .example-content p {
+            font-size: 1.1rem;
+            color: #666;
+            margin: 0;
+        }
+
+        /* Video Container */
+        .video-container {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 3px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .video-container iframe {
+            border-radius: 8px;
+        }
+
+        .video-container .caption {
+            color: #aaa;
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+
+        /* Formula Box */
+        .formula-box {
+            background: #e8f5e9;
+            border: 3px solid #4caf50;
+            border-radius: 12px;
+            padding: 1.5rem 2.5rem;
+            margin: 1.5rem 0;
+            display: inline-block;
+        }
+
+        .formula {
+            font-size: 2.5rem;
+            font-family: 'Times New Roman', serif;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        /* Calculator */
+        .calculator {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            display: inline-block;
+            border: 3px solid #ddd;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .calc-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .calc-row label {
+            width: 140px;
+            font-size: 1.2rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .calc-row input[type="number"] {
+            width: 140px;
+            padding: 0.75rem;
+            border: 3px solid #ccc;
+            border-radius: 8px;
+            background: #fff;
+            color: #1a1a1a;
+            font-size: 1.3rem;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .calc-row input[type="number"]:focus {
+            border-color: #0077aa;
+        }
+
+        .calc-row .unit {
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Audio Controls */
+        .audio-section {
+            background: #e8f5e9;
+            border: 3px solid #4caf50;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .audio-section h3 {
+            color: #2e7d32;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .volume-warning {
+            background: #fff3e0;
+            border: 3px solid #ff9800;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: #e65100;
+            font-weight: 600;
+        }
+
+        .frequency-display {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #2e7d32;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .frequency-display span {
+            font-size: 2rem;
+            color: #666;
+        }
+
+        /* Particle Legend */
+        .legend {
+            display: flex;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .legend-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+
+        /* Drag instruction */
+        .drag-instruction {
+            background: #e8f5e9;
+            border: 2px dashed #4caf50;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            margin: 1rem 0;
+            font-size: 1.1rem;
+            color: #2e7d32;
+            font-weight: 600;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <span class="nav-title">Sound & Waves</span>
+        <a href="#section1" class="active">1. What Are Waves?</a>
+        <a href="#section2">2. Wave Types</a>
+        <a href="#section3">3. Wave Properties</a>
+    </nav>
+
+    <main>
+        <!-- Section 1: What Are Waves? -->
+        <section id="section1">
+            <div class="section-number">Section 1</div>
+            <h1>What Are Waves?</h1>
+            <p>
+                A wave is a <span class="highlight">disturbance that transfers energy</span> from one place to another.
+                But here's the key insight: <span class="highlight">the medium itself doesn't travel</span> — only the energy does!
+            </p>
+
+            <h2>The Stadium Wave</h2>
+            <p>Watch this video of a stadium wave (Mexican wave). Notice how people stand up and sit down, but they don't leave their seats. The "wave" travels around the stadium, but the people stay in place!</p>
+
+            <p>
+                <a href="https://youtube.com/shorts/khnoIBiivcQ" target="_blank" style="color: #0077aa; font-weight: 700; font-size: 1.4rem;">
+                    ▶ Watch Stadium Wave Video (YouTube)
+                </a>
+            </p>
+
+            <div class="key-point">
+                <strong>Key Concept:</strong> In a wave, ENERGY moves from one place to another,
+                but the PARTICLES of the medium just vibrate around their rest position and return back!
+            </div>
+
+            <h2>Particle Chain Simulation</h2>
+            <p>Drag the first (leftmost) particle to set the pulse strength, then release to send the wave!</p>
+
+            <div class="drag-instruction">
+                👆 DRAG the first particle left/right → Release to send pulse!
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="particleChain" width="900" height="200"></canvas>
+                <div class="canvas-label">Drag the first particle to control amplitude - watch the pulse travel and stop!</div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-secondary" id="resetChain">Reset</button>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #00bcd4;"></div>
+                    <span>Particles</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #4caf50;"></div>
+                    <span>Tracked particle (watch this one!)</span>
+                </div>
+            </div>
+
+            <h2>Slinky Wave Demo</h2>
+            <p>Drag the left end of the slinky to compress it, then release to send a compression wave!</p>
+
+            <div class="drag-instruction">
+                👆 DRAG the left end inward → Release to send compression!
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="slinkyCanvas" width="900" height="180"></canvas>
+                <div class="canvas-label">Drag to compress - the more you push, the stronger the wave!</div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-secondary" id="resetSlinky">Reset</button>
+            </div>
+        </section>
+
+        <!-- Section 2: Longitudinal vs Transverse -->
+        <section id="section2">
+            <div class="section-number">Section 2</div>
+            <h1>Types of Waves</h1>
+            <p>
+                Waves are classified by <span class="highlight">how particles move</span> relative to the wave direction.
+                There are two main types: <span class="highlight">Longitudinal</span> and <span class="highlight">Transverse</span> waves.
+            </p>
+
+            <div class="split-view">
+                <div class="split-panel">
+                    <h3>Longitudinal Wave</h3>
+                    <p>Particles move <strong style="color:#ff9800;">PARALLEL</strong> (back ← → forth) to wave direction.</p>
+                    <p><strong>Examples:</strong> Sound waves, slinky compression</p>
+                    <canvas id="longitudinalCanvas" width="400" height="220"></canvas>
+                </div>
+
+                <div class="split-panel">
+                    <h3>Transverse Wave</h3>
+                    <p>Particles move <strong style="color:#4caf50;">PERPENDICULAR</strong> (up ↑ ↓ down) to wave direction.</p>
+                    <p><strong>Examples:</strong> Rope wave, water ripples, guitar string</p>
+                    <canvas id="transverseCanvas" width="400" height="220"></canvas>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Wave Speed</label>
+                    <input type="range" id="waveSpeed" min="0.3" max="2" step="0.1" value="1">
+                </div>
+                <div class="control-group">
+                    <label>Frequency</label>
+                    <input type="range" id="waveFreq" min="0.5" max="2" step="0.1" value="1">
+                </div>
+                <button class="btn btn-secondary" id="toggleParticleTrack">Toggle Particle Tracking</button>
+            </div>
+
+            <div class="examples-box">
+                <h4>Real-World Examples of Transverse Waves</h4>
+
+                <div class="example-item">
+                    <div class="example-icon">🪢</div>
+                    <div class="example-content">
+                        <h5>Rope / String Wave</h5>
+                        <p>When you shake a rope up and down, the wave travels horizontally along the rope, but each part of the rope only moves up and down - perpendicular to the wave direction!</p>
+                    </div>
+                </div>
+
+                <div class="example-item">
+                    <div class="example-icon">💧</div>
+                    <div class="example-content">
+                        <h5>Water Ripples</h5>
+                        <p>When you drop a pebble in a pond, ripples spread outward in circles. But if you watch a leaf floating on the water, it only bobs up and down - it doesn't travel with the wave!</p>
+                    </div>
+                </div>
+
+                <div class="example-item">
+                    <div class="example-icon">🎸</div>
+                    <div class="example-content">
+                        <h5>Guitar String Vibration</h5>
+                        <p>When you pluck a guitar string, the wave travels along the length of the string, but the string itself vibrates up and down (perpendicular). This creates the sound we hear!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-point">
+                <strong>SOUND is a Longitudinal Wave!</strong> When sound travels through air, air molecules vibrate
+                <strong>back and forth</strong> in the same direction the sound is traveling.
+                They create regions of high pressure (compressions) and low pressure (rarefactions).
+            </div>
+        </section>
+
+        <!-- Section 3: Properties of Waves -->
+        <section id="section3">
+            <div class="section-number">Section 3</div>
+            <h1>Properties of Waves</h1>
+            <p>
+                Every wave can be described by three key properties:
+                <span class="highlight">Amplitude</span>, <span class="highlight">Frequency</span>, and <span class="highlight">Wavelength</span>.
+            </p>
+
+            <h2>Transverse Wave - Amplitude & Wavelength</h2>
+            <p>Adjust the sliders to see how amplitude and frequency affect a transverse wave (like a rope wave).</p>
+
+            <div class="canvas-container">
+                <canvas id="wavePlayground" width="900" height="300"></canvas>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Amplitude (A)</label>
+                    <input type="range" id="amplitude" min="20" max="100" value="60">
+                    <span class="value-display" id="ampValue">60 units</span>
+                </div>
+                <div class="control-group">
+                    <label>Frequency (f)</label>
+                    <input type="range" id="frequency" min="0.5" max="3" step="0.1" value="1.5">
+                    <span class="value-display" id="freqValue">1.5 Hz</span>
+                </div>
+                <div class="control-group">
+                    <label>Wavelength (λ)</label>
+                    <span class="value-display" id="wavelengthValue">133 px</span>
+                </div>
+            </div>
+
+            <h2>Longitudinal Wave - Amplitude</h2>
+            <p>For sound (longitudinal waves), amplitude relates to how much the air is compressed. Higher amplitude = LOUDER sound!</p>
+
+            <div class="canvas-container">
+                <canvas id="longitudinalPlayground" width="900" height="200"></canvas>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Sound Amplitude</label>
+                    <input type="range" id="longAmplitude" min="5" max="30" value="15">
+                    <span class="value-display" id="longAmpValue">Medium</span>
+                </div>
+            </div>
+
+            <div class="key-point">
+                <strong>Amplitude</strong> = Height of wave (transverse) OR amount of compression (longitudinal) = <strong>LOUDNESS</strong> for sound<br><br>
+                <strong>Frequency</strong> = Waves per second = <strong>PITCH</strong> for sound (high freq = high pitch)<br><br>
+                <strong>Wavelength</strong> = Distance between two crests (transverse) or two compressions (longitudinal)
+            </div>
+
+            <h2>The Wave Equation</h2>
+
+            <div class="formula-box">
+                <div class="formula">v = f × λ</div>
+            </div>
+            <p style="margin-top: 1rem; font-size: 1.4rem;"><strong>Speed = Frequency × Wavelength</strong></p>
+
+            <div class="calculator">
+                <h3 style="color: #0077aa; margin-bottom: 1.5rem; font-size: 1.5rem;">Wave Calculator</h3>
+                <div class="calc-row">
+                    <label>Speed (v)</label>
+                    <input type="number" id="calcSpeed" value="340" step="1">
+                    <span class="unit">m/s</span>
+                </div>
+                <div class="calc-row">
+                    <label>Frequency (f)</label>
+                    <input type="number" id="calcFreq" value="256" step="1">
+                    <span class="unit">Hz</span>
+                </div>
+                <div class="calc-row">
+                    <label>Wavelength (λ)</label>
+                    <input type="number" id="calcWavelength" value="1.33" step="0.01">
+                    <span class="unit">m</span>
+                </div>
+                <p style="font-size: 1rem; color: #666; margin-top: 1.5rem;">Change any value - the others will update automatically!</p>
+            </div>
+
+            <h2>Hear the Frequency!</h2>
+
+            <div class="audio-section">
+                <h3>Pitch & Frequency Demo</h3>
+                <div class="volume-warning">
+                    ⚠️ WARNING: Start with LOW volume! High frequencies can be uncomfortable.
+                </div>
+
+                <div class="frequency-display">
+                    <span id="audioFreqDisplay">440</span> <span>Hz</span>
+                </div>
+
+                <div class="controls">
+                    <div class="control-group" style="flex: 1; max-width: 500px;">
+                        <label>Frequency (20 Hz - 2000 Hz)</label>
+                        <input type="range" id="audioFrequency" min="20" max="2000" value="440" style="width: 100%;">
+                    </div>
+                    <div class="control-group">
+                        <label>Volume</label>
+                        <input type="range" id="audioVolume" min="0" max="0.3" step="0.01" value="0.1">
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" id="playTone">▶ Play Tone</button>
+                    <button class="btn btn-danger" id="stopTone">■ Stop</button>
+                </div>
+
+                <div style="margin-top: 1.5rem; font-size: 1.2rem;">
+                    <p><strong style="color: #d32f2f;">Low frequency (20-200 Hz)</strong> = Deep bass sounds</p>
+                    <p><strong style="color: #ff9800;">Mid frequency (200-2000 Hz)</strong> = Human voice range</p>
+                    <p><strong style="color: #4caf50;">High frequency (2000+ Hz)</strong> = High pitched sounds</p>
+                </div>
+            </div>
+
+            <div class="key-point">
+                <strong>Human Hearing Range:</strong> 20 Hz to 20,000 Hz<br><br>
+                <strong>Below 20 Hz</strong> = Infrasound (elephants, earthquakes)<br>
+                <strong>Above 20,000 Hz</strong> = Ultrasound (bats, dolphins, medical scans)
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // ============================================
+        // SECTION 1: Particle Chain - DRAGGABLE
+        // ============================================
+        const particleChainCanvas = document.getElementById('particleChain');
+        const pcCtx = particleChainCanvas.getContext('2d');
+
+        const NUM_PARTICLES = 20;
+        const PARTICLE_RADIUS = 14;
+        const REST_SPACING = 32;
+        const TRACKED_PARTICLE = 10;
+        const CHAIN_START_X = 150; // More gap on left for dragging
+
+        let particles = [];
+        let pulsePosition = -100;
+        let pulseActive = false;
+        let pulseAmplitude = 50;
+        const PULSE_SPEED = 4;
+        const PULSE_WIDTH = 80;
+
+        // Dragging state
+        let isDraggingParticle = false;
+        let draggedParticleDisplacement = 0;
+
+        function initParticles() {
+            particles = [];
+            const centerY = particleChainCanvas.height / 2;
+
+            for (let i = 0; i < NUM_PARTICLES; i++) {
+                particles.push({
+                    restX: CHAIN_START_X + i * REST_SPACING,
+                    restY: centerY
+                });
+            }
+            pulsePosition = -100;
+            pulseActive = false;
+            isDraggingParticle = false;
+            draggedParticleDisplacement = 0;
+        }
+
+        function getParticleDisplacement(particleX, index) {
+            // If dragging first particle
+            if (isDraggingParticle && index === 0) {
+                return draggedParticleDisplacement;
+            }
+
+            if (!pulseActive) return 0;
+
+            // Gaussian pulse shape
+            const distance = particleX - pulsePosition;
+            const displacement = pulseAmplitude * Math.exp(-(distance * distance) / (2 * PULSE_WIDTH * PULSE_WIDTH));
+            return displacement;
+        }
+
+        function updatePulse() {
+            if (pulseActive) {
+                pulsePosition += PULSE_SPEED;
+
+                const lastParticleX = particles[particles.length - 1].restX;
+                if (pulsePosition > lastParticleX + PULSE_WIDTH * 3) {
+                    pulseActive = false;
+                }
+            }
+        }
+
+        function drawParticleChain() {
+            pcCtx.fillStyle = '#1a1a1a';
+            pcCtx.fillRect(0, 0, particleChainCanvas.width, particleChainCanvas.height);
+
+            // Draw rest position line
+            pcCtx.strokeStyle = '#444';
+            pcCtx.lineWidth = 2;
+            pcCtx.setLineDash([5, 5]);
+            pcCtx.beginPath();
+            pcCtx.moveTo(CHAIN_START_X - 100, particleChainCanvas.height / 2);
+            pcCtx.lineTo(particleChainCanvas.width - 20, particleChainCanvas.height / 2);
+            pcCtx.stroke();
+            pcCtx.setLineDash([]);
+
+            // Draw connections
+            pcCtx.strokeStyle = '#666';
+            pcCtx.lineWidth = 3;
+            pcCtx.beginPath();
+            for (let i = 0; i < particles.length - 1; i++) {
+                const p1 = particles[i];
+                const p2 = particles[i + 1];
+                const d1 = getParticleDisplacement(p1.restX, i);
+                const d2 = getParticleDisplacement(p2.restX, i + 1);
+                pcCtx.moveTo(p1.restX + d1, p1.restY);
+                pcCtx.lineTo(p2.restX + d2, p2.restY);
+            }
+            pcCtx.stroke();
+
+            // Draw particles - simple colors only
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                const displacement = getParticleDisplacement(p.restX, i);
+                const x = p.restX + displacement;
+                const y = p.restY;
+
+                // Simple colors: cyan for all, green for tracked, yellow for dragging
+                let color = '#00bcd4';
+                if (i === TRACKED_PARTICLE) {
+                    color = '#4caf50';
+                } else if (i === 0 && isDraggingParticle) {
+                    color = '#ffeb3b';
+                }
+
+                // Highlight first particle with drag area
+                if (i === 0 && !pulseActive) {
+                    pcCtx.strokeStyle = '#ffeb3b';
+                    pcCtx.lineWidth = 4;
+                    pcCtx.beginPath();
+                    pcCtx.arc(x, y, PARTICLE_RADIUS + 8, 0, Math.PI * 2);
+                    pcCtx.stroke();
+                }
+
+                pcCtx.fillStyle = color;
+                pcCtx.beginPath();
+                pcCtx.arc(x, y, PARTICLE_RADIUS, 0, Math.PI * 2);
+                pcCtx.fill();
+                pcCtx.strokeStyle = '#fff';
+                pcCtx.lineWidth = 2;
+                pcCtx.stroke();
+            }
+
+            // Draw wave direction arrow
+            if (pulseActive) {
+                pcCtx.fillStyle = '#ff5722';
+                pcCtx.font = 'bold 16px Arial';
+                pcCtx.fillText('Wave Direction →', pulsePosition - 60, 30);
+            }
+
+            // Drag instruction
+            if (!pulseActive && !isDraggingParticle) {
+                pcCtx.fillStyle = '#ffeb3b';
+                pcCtx.font = 'bold 14px Arial';
+                pcCtx.fillText('← DRAG ME', particles[0].restX + 25, particles[0].restY - 30);
+            }
+
+            // Labels
+            pcCtx.fillStyle = '#888';
+            pcCtx.font = 'bold 14px Arial';
+            pcCtx.fillText('START', CHAIN_START_X - 20, particleChainCanvas.height - 15);
+            pcCtx.fillText('END', particleChainCanvas.width - 50, particleChainCanvas.height - 15);
+        }
+
+        function animateParticleChain() {
+            updatePulse();
+            drawParticleChain();
+            requestAnimationFrame(animateParticleChain);
+        }
+
+        // Mouse events for particle chain
+        particleChainCanvas.addEventListener('mousedown', (e) => {
+            if (pulseActive) return;
+
+            const rect = particleChainCanvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const p = particles[0];
+            const dist = Math.sqrt((mouseX - p.restX) ** 2 + (mouseY - p.restY) ** 2);
+
+            if (dist < PARTICLE_RADIUS + 10) {
+                isDraggingParticle = true;
+            }
+        });
+
+        particleChainCanvas.addEventListener('mousemove', (e) => {
+            if (!isDraggingParticle) return;
+
+            const rect = particleChainCanvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+
+            draggedParticleDisplacement = mouseX - particles[0].restX;
+            // Limit displacement - allow larger range with more left space
+            draggedParticleDisplacement = Math.max(-120, Math.min(80, draggedParticleDisplacement));
+        });
+
+        particleChainCanvas.addEventListener('mouseup', () => {
+            if (isDraggingParticle && Math.abs(draggedParticleDisplacement) > 10) {
+                pulseAmplitude = Math.abs(draggedParticleDisplacement);
+                pulsePosition = particles[0].restX - PULSE_WIDTH;
+                pulseActive = true;
+            }
+            isDraggingParticle = false;
+            draggedParticleDisplacement = 0;
+        });
+
+        particleChainCanvas.addEventListener('mouseleave', () => {
+            if (isDraggingParticle && Math.abs(draggedParticleDisplacement) > 10) {
+                pulseAmplitude = Math.abs(draggedParticleDisplacement);
+                pulsePosition = particles[0].restX - PULSE_WIDTH;
+                pulseActive = true;
+            }
+            isDraggingParticle = false;
+            draggedParticleDisplacement = 0;
+        });
+
+        document.getElementById('resetChain').addEventListener('click', initParticles);
+
+        // ============================================
+        // SECTION 1: Slinky - DRAGGABLE
+        // ============================================
+        const slinkyCanvas = document.getElementById('slinkyCanvas');
+        const slCtx = slinkyCanvas.getContext('2d');
+
+        const SLINKY_COILS = 50;
+        let slinkyCoils = [];
+        let slinkyPulsePos = -100;
+        let slinkyPulseActive = false;
+        let slinkyPulseStrength = 25;
+        const SLINKY_PULSE_SPEED = 5;
+        const SLINKY_PULSE_WIDTH = 60;
+
+        // Dragging state for slinky
+        let isDraggingSlinky = false;
+        let slinkyDragAmount = 0;
+
+        function initSlinky() {
+            slinkyCoils = [];
+            const startX = 60;
+            const endX = slinkyCanvas.width - 60;
+            const spacing = (endX - startX) / SLINKY_COILS;
+
+            for (let i = 0; i < SLINKY_COILS; i++) {
+                slinkyCoils.push({
+                    restX: startX + i * spacing
+                });
+            }
+            slinkyPulsePos = -100;
+            slinkyPulseActive = false;
+            isDraggingSlinky = false;
+            slinkyDragAmount = 0;
+        }
+
+        function getSlinkyDisplacement(coilX, index) {
+            // If dragging first few coils
+            if (isDraggingSlinky && index < 5) {
+                const factor = 1 - (index / 5);
+                return slinkyDragAmount * factor;
+            }
+
+            if (!slinkyPulseActive) return 0;
+
+            const distance = coilX - slinkyPulsePos;
+            const displacement = -slinkyPulseStrength * Math.exp(-(distance * distance) / (2 * SLINKY_PULSE_WIDTH * SLINKY_PULSE_WIDTH));
+            return displacement;
+        }
+
+        function updateSlinkyPulse() {
+            if (slinkyPulseActive) {
+                slinkyPulsePos += SLINKY_PULSE_SPEED;
+
+                const lastCoilX = slinkyCoils[slinkyCoils.length - 1].restX;
+                if (slinkyPulsePos > lastCoilX + SLINKY_PULSE_WIDTH * 3) {
+                    slinkyPulseActive = false;
+                }
+            }
+        }
+
+        function drawSlinky() {
+            slCtx.fillStyle = '#1a1a1a';
+            slCtx.fillRect(0, 0, slinkyCanvas.width, slinkyCanvas.height);
+
+            const centerY = slinkyCanvas.height / 2;
+
+            // Draw handle area
+            if (!slinkyPulseActive) {
+                slCtx.fillStyle = 'rgba(255, 235, 59, 0.2)';
+                slCtx.fillRect(40, centerY - 50, 60, 100);
+                slCtx.strokeStyle = '#ffeb3b';
+                slCtx.lineWidth = 2;
+                slCtx.setLineDash([5, 5]);
+                slCtx.strokeRect(40, centerY - 50, 60, 100);
+                slCtx.setLineDash([]);
+            }
+
+            // Draw coils - simple cyan color for all
+            for (let i = 0; i < slinkyCoils.length; i++) {
+                const coil = slinkyCoils[i];
+                const displacement = getSlinkyDisplacement(coil.restX, i);
+                const x = coil.restX + displacement;
+
+                slCtx.strokeStyle = '#00bcd4';
+                slCtx.lineWidth = 4;
+
+                slCtx.beginPath();
+                slCtx.ellipse(x, centerY, 4, 35, 0, 0, Math.PI * 2);
+                slCtx.stroke();
+            }
+
+            // Draw direction arrow
+            if (slinkyPulseActive) {
+                slCtx.fillStyle = '#00bcd4';
+                slCtx.font = 'bold 16px Arial';
+                slCtx.fillText('Wave →', slinkyPulsePos - 30, 25);
+            }
+
+            // Drag instruction
+            if (!slinkyPulseActive) {
+                slCtx.fillStyle = '#ffeb3b';
+                slCtx.font = 'bold 14px Arial';
+                slCtx.fillText('PUSH →', 55, centerY - 55);
+            }
+        }
+
+        function animateSlinky() {
+            updateSlinkyPulse();
+            drawSlinky();
+            requestAnimationFrame(animateSlinky);
+        }
+
+        // Mouse events for slinky
+        slinkyCanvas.addEventListener('mousedown', (e) => {
+            if (slinkyPulseActive) return;
+
+            const rect = slinkyCanvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            const centerY = slinkyCanvas.height / 2;
+
+            // Check if clicking in the handle area
+            if (mouseX < 120 && Math.abs(mouseY - centerY) < 50) {
+                isDraggingSlinky = true;
+            }
+        });
+
+        slinkyCanvas.addEventListener('mousemove', (e) => {
+            if (!isDraggingSlinky) return;
+
+            const rect = slinkyCanvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+
+            slinkyDragAmount = mouseX - slinkyCoils[0].restX;
+            // Only allow pushing inward (positive displacement)
+            slinkyDragAmount = Math.max(0, Math.min(80, slinkyDragAmount));
+        });
+
+        slinkyCanvas.addEventListener('mouseup', () => {
+            if (isDraggingSlinky && slinkyDragAmount > 10) {
+                slinkyPulseStrength = slinkyDragAmount;
+                slinkyPulsePos = slinkyCoils[0].restX - SLINKY_PULSE_WIDTH;
+                slinkyPulseActive = true;
+            }
+            isDraggingSlinky = false;
+            slinkyDragAmount = 0;
+        });
+
+        slinkyCanvas.addEventListener('mouseleave', () => {
+            if (isDraggingSlinky && slinkyDragAmount > 10) {
+                slinkyPulseStrength = slinkyDragAmount;
+                slinkyPulsePos = slinkyCoils[0].restX - SLINKY_PULSE_WIDTH;
+                slinkyPulseActive = true;
+            }
+            isDraggingSlinky = false;
+            slinkyDragAmount = 0;
+        });
+
+        document.getElementById('resetSlinky').addEventListener('click', initSlinky);
+
+        // ============================================
+        // SECTION 2: Longitudinal & Transverse Waves
+        // ============================================
+        const longCanvas = document.getElementById('longitudinalCanvas');
+        const longCtx = longCanvas.getContext('2d');
+        const transCanvas = document.getElementById('transverseCanvas');
+        const transCtx = transCanvas.getContext('2d');
+
+        let waveTime = 0;
+        let waveSpeedMult = 1;
+        let waveFreqMult = 1;
+        let showParticleTrack = true;
+
+        function drawLongitudinalWave() {
+            longCtx.fillStyle = '#1a1a1a';
+            longCtx.fillRect(0, 0, longCanvas.width, longCanvas.height);
+
+            const centerY = longCanvas.height / 2 + 10;
+            const numParticles = 18;
+            const baseSpacing = (longCanvas.width - 60) / numParticles;
+
+            for (let i = 0; i < numParticles; i++) {
+                const baseX = 30 + (i + 0.5) * baseSpacing;
+                const phase = (i / numParticles) * Math.PI * 4 * waveFreqMult - waveTime;
+                const displacement = Math.sin(phase) * 15;
+                const x = baseX + displacement;
+
+                const compression = -Math.cos(phase);
+                let color = '#00bcd4';
+                if (compression > 0.4) {
+                    color = '#ff9800';
+                } else if (compression < -0.4) {
+                    color = '#2196f3';
+                }
+
+                if (i === 9 && showParticleTrack) {
+                    color = '#4caf50';
+                    longCtx.fillStyle = 'rgba(76, 175, 80, 0.3)';
+                    longCtx.fillRect(baseX - 25, centerY - 12, 50, 24);
+                    longCtx.fillStyle = '#4caf50';
+                    longCtx.font = 'bold 18px Arial';
+                    longCtx.fillText('← →', baseX - 18, centerY + 45);
+                }
+
+                longCtx.fillStyle = color;
+                longCtx.beginPath();
+                longCtx.arc(x, centerY, 12, 0, Math.PI * 2);
+                longCtx.fill();
+                longCtx.strokeStyle = '#fff';
+                longCtx.lineWidth = 2;
+                longCtx.stroke();
+            }
+
+            longCtx.fillStyle = '#fff';
+            longCtx.font = 'bold 14px Arial';
+            longCtx.fillText('Wave →', longCanvas.width - 80, 25);
+
+            longCtx.fillStyle = '#ff9800';
+            longCtx.font = 'bold 12px Arial';
+            longCtx.fillText('C = Compression', 10, longCanvas.height - 10);
+            longCtx.fillStyle = '#2196f3';
+            longCtx.fillText('R = Rarefaction', 140, longCanvas.height - 10);
+        }
+
+        function drawTransverseWave() {
+            transCtx.fillStyle = '#1a1a1a';
+            transCtx.fillRect(0, 0, transCanvas.width, transCanvas.height);
+
+            const centerY = transCanvas.height / 2 + 10;
+            const numParticles = 18;
+            const spacing = (transCanvas.width - 60) / numParticles;
+
+            transCtx.strokeStyle = 'rgba(0, 188, 212, 0.4)';
+            transCtx.lineWidth = 3;
+            transCtx.beginPath();
+            for (let x = 20; x <= transCanvas.width - 20; x += 2) {
+                const i = (x - 30) / spacing;
+                const phase = (i / numParticles) * Math.PI * 4 * waveFreqMult - waveTime;
+                const y = centerY + Math.sin(phase) * 50;
+                if (x === 20) {
+                    transCtx.moveTo(x, y);
+                } else {
+                    transCtx.lineTo(x, y);
+                }
+            }
+            transCtx.stroke();
+
+            for (let i = 0; i < numParticles; i++) {
+                const x = 30 + (i + 0.5) * spacing;
+                const phase = (i / numParticles) * Math.PI * 4 * waveFreqMult - waveTime;
+                const displacement = Math.sin(phase) * 50;
+                const y = centerY + displacement;
+
+                let color = '#00bcd4';
+                if (displacement < -25) {
+                    color = '#4caf50';
+                } else if (displacement > 25) {
+                    color = '#f44336';
+                }
+
+                if (i === 9 && showParticleTrack) {
+                    color = '#4caf50';
+                    transCtx.fillStyle = 'rgba(76, 175, 80, 0.3)';
+                    transCtx.fillRect(x - 6, centerY - 55, 12, 110);
+                    transCtx.fillStyle = '#4caf50';
+                    transCtx.font = 'bold 16px Arial';
+                    transCtx.fillText('↑', x - 6, 20);
+                    transCtx.fillText('↓', x - 6, transCanvas.height - 5);
+                }
+
+                transCtx.fillStyle = color;
+                transCtx.beginPath();
+                transCtx.arc(x, y, 12, 0, Math.PI * 2);
+                transCtx.fill();
+                transCtx.strokeStyle = '#fff';
+                transCtx.lineWidth = 2;
+                transCtx.stroke();
+            }
+
+            transCtx.fillStyle = '#fff';
+            transCtx.font = 'bold 14px Arial';
+            transCtx.fillText('Wave →', transCanvas.width - 80, 25);
+        }
+
+        function animateWaveTypes() {
+            waveTime += 0.04 * waveSpeedMult;
+            drawLongitudinalWave();
+            drawTransverseWave();
+            requestAnimationFrame(animateWaveTypes);
+        }
+
+        document.getElementById('waveSpeed').addEventListener('input', (e) => {
+            waveSpeedMult = parseFloat(e.target.value);
+        });
+
+        document.getElementById('waveFreq').addEventListener('input', (e) => {
+            waveFreqMult = parseFloat(e.target.value);
+        });
+
+        document.getElementById('toggleParticleTrack').addEventListener('click', () => {
+            showParticleTrack = !showParticleTrack;
+        });
+
+        // ============================================
+        // SECTION 3: Transverse Wave Playground
+        // ============================================
+        const playgroundCanvas = document.getElementById('wavePlayground');
+        const pgCtx = playgroundCanvas.getContext('2d');
+
+        let pgTime = 0;
+        let pgAmplitude = 60;
+        let pgFrequency = 1.5;
+
+        function drawWavePlayground() {
+            pgCtx.fillStyle = '#1a1a1a';
+            pgCtx.fillRect(0, 0, playgroundCanvas.width, playgroundCanvas.height);
+
+            const centerY = playgroundCanvas.height / 2;
+            const wavelength = 200 / pgFrequency;
+
+            // Draw center line
+            pgCtx.strokeStyle = '#444';
+            pgCtx.lineWidth = 2;
+            pgCtx.setLineDash([8, 8]);
+            pgCtx.beginPath();
+            pgCtx.moveTo(0, centerY);
+            pgCtx.lineTo(playgroundCanvas.width, centerY);
+            pgCtx.stroke();
+            pgCtx.setLineDash([]);
+
+            // Draw wave
+            pgCtx.strokeStyle = '#00bcd4';
+            pgCtx.lineWidth = 5;
+            pgCtx.beginPath();
+
+            for (let x = 0; x < playgroundCanvas.width; x += 2) {
+                const phase = (x / wavelength) * Math.PI * 2 - pgTime;
+                const y = centerY - Math.sin(phase) * pgAmplitude;
+                if (x === 0) {
+                    pgCtx.moveTo(x, y);
+                } else {
+                    pgCtx.lineTo(x, y);
+                }
+            }
+            pgCtx.stroke();
+
+            // Draw amplitude marker at a fixed position
+            const ampMarkerX = 200;
+            pgCtx.strokeStyle = '#ff9800';
+            pgCtx.lineWidth = 3;
+            pgCtx.beginPath();
+            pgCtx.moveTo(ampMarkerX, centerY);
+            pgCtx.lineTo(ampMarkerX, centerY - pgAmplitude);
+            pgCtx.stroke();
+
+            // Amplitude arrow heads
+            pgCtx.beginPath();
+            pgCtx.moveTo(ampMarkerX - 8, centerY - pgAmplitude + 15);
+            pgCtx.lineTo(ampMarkerX, centerY - pgAmplitude);
+            pgCtx.lineTo(ampMarkerX + 8, centerY - pgAmplitude + 15);
+            pgCtx.stroke();
+
+            pgCtx.fillStyle = '#ff9800';
+            pgCtx.font = 'bold 24px Arial';
+            pgCtx.fillText('A', ampMarkerX + 15, centerY - pgAmplitude / 2 + 8);
+
+            // Draw wavelength marker
+            const waveStartX = 350;
+            pgCtx.strokeStyle = '#4caf50';
+            pgCtx.lineWidth = 3;
+
+            pgCtx.beginPath();
+            pgCtx.moveTo(waveStartX, centerY + pgAmplitude + 35);
+            pgCtx.lineTo(waveStartX + wavelength, centerY + pgAmplitude + 35);
+            pgCtx.stroke();
+
+            // Wavelength end caps
+            pgCtx.beginPath();
+            pgCtx.moveTo(waveStartX, centerY + pgAmplitude + 25);
+            pgCtx.lineTo(waveStartX, centerY + pgAmplitude + 45);
+            pgCtx.moveTo(waveStartX + wavelength, centerY + pgAmplitude + 25);
+            pgCtx.lineTo(waveStartX + wavelength, centerY + pgAmplitude + 45);
+            pgCtx.stroke();
+
+            pgCtx.fillStyle = '#4caf50';
+            pgCtx.font = 'bold 20px Arial';
+            pgCtx.fillText('λ (wavelength)', waveStartX + wavelength / 2 - 60, centerY + pgAmplitude + 65);
+
+            // Labels
+            pgCtx.fillStyle = '#fff';
+            pgCtx.font = 'bold 16px Arial';
+            pgCtx.fillText('Crest (top)', 50, 30);
+            pgCtx.fillText('Trough (bottom)', 50, playgroundCanvas.height - 15);
+
+            // Title
+            pgCtx.fillStyle = '#00bcd4';
+            pgCtx.font = 'bold 18px Arial';
+            pgCtx.fillText('TRANSVERSE WAVE', playgroundCanvas.width - 220, 30);
+        }
+
+        function animatePlayground() {
+            pgTime += 0.05 * pgFrequency;
+            drawWavePlayground();
+            requestAnimationFrame(animatePlayground);
+        }
+
+        document.getElementById('amplitude').addEventListener('input', (e) => {
+            pgAmplitude = parseInt(e.target.value);
+            document.getElementById('ampValue').textContent = pgAmplitude + ' units';
+        });
+
+        document.getElementById('frequency').addEventListener('input', (e) => {
+            pgFrequency = parseFloat(e.target.value);
+            document.getElementById('freqValue').textContent = pgFrequency.toFixed(1) + ' Hz';
+            document.getElementById('wavelengthValue').textContent = Math.round(200 / pgFrequency) + ' px';
+        });
+
+        // ============================================
+        // SECTION 3: Longitudinal Wave Amplitude Demo
+        // ============================================
+        const longPlayCanvas = document.getElementById('longitudinalPlayground');
+        const lpCtx = longPlayCanvas.getContext('2d');
+
+        let lpTime = 0;
+        let lpAmplitude = 15;
+
+        function drawLongitudinalPlayground() {
+            lpCtx.fillStyle = '#1a1a1a';
+            lpCtx.fillRect(0, 0, longPlayCanvas.width, longPlayCanvas.height);
+
+            const centerY = longPlayCanvas.height / 2;
+            const numParticles = 30;
+            const baseSpacing = (longPlayCanvas.width - 80) / numParticles;
+
+            // Draw density wave visualization at top
+            lpCtx.fillStyle = '#444';
+            lpCtx.font = 'bold 14px Arial';
+            lpCtx.fillText('Density variation:', 20, 25);
+
+            for (let x = 100; x < longPlayCanvas.width - 40; x += 3) {
+                const i = (x - 100) / baseSpacing;
+                const phase = (i / numParticles) * Math.PI * 6 - lpTime;
+                const density = Math.sin(phase);
+
+                const alpha = 0.3 + (density + 1) * 0.35;
+                lpCtx.fillStyle = `rgba(0, 188, 212, ${alpha})`;
+                lpCtx.fillRect(x, 15, 3, 25);
+            }
+
+            // Draw particles
+            for (let i = 0; i < numParticles; i++) {
+                const baseX = 40 + (i + 0.5) * baseSpacing;
+                const phase = (i / numParticles) * Math.PI * 6 - lpTime;
+                const displacement = Math.sin(phase) * lpAmplitude;
+                const x = baseX + displacement;
+
+                // Compression coloring
+                const compression = -Math.cos(phase);
+                let color = '#00bcd4';
+                let size = 10;
+
+                if (compression > 0.3) {
+                    color = '#ff9800';
+                    size = 10 + compression * 4;
+                } else if (compression < -0.3) {
+                    color = '#2196f3';
+                    size = 10 + compression * 2;
+                }
+
+                lpCtx.fillStyle = color;
+                lpCtx.beginPath();
+                lpCtx.arc(x, centerY + 20, size, 0, Math.PI * 2);
+                lpCtx.fill();
+                lpCtx.strokeStyle = '#fff';
+                lpCtx.lineWidth = 1.5;
+                lpCtx.stroke();
+            }
+
+            // Labels
+            lpCtx.fillStyle = '#ff9800';
+            lpCtx.font = 'bold 14px Arial';
+            lpCtx.fillText('High amplitude = More compression = LOUDER sound', 20, longPlayCanvas.height - 15);
+
+            // Title
+            lpCtx.fillStyle = '#00bcd4';
+            lpCtx.font = 'bold 18px Arial';
+            lpCtx.fillText('LONGITUDINAL WAVE (Sound)', longPlayCanvas.width - 280, longPlayCanvas.height - 15);
+        }
+
+        function animateLongPlayground() {
+            lpTime += 0.06;
+            drawLongitudinalPlayground();
+            requestAnimationFrame(animateLongPlayground);
+        }
+
+        document.getElementById('longAmplitude').addEventListener('input', (e) => {
+            lpAmplitude = parseInt(e.target.value);
+            const labels = ['Soft', 'Medium', 'Loud', 'Very Loud'];
+            const index = Math.min(3, Math.floor((lpAmplitude - 5) / 7));
+            document.getElementById('longAmpValue').textContent = labels[index];
+        });
+
+        // ============================================
+        // SECTION 3: Wave Calculator
+        // ============================================
+        const calcSpeed = document.getElementById('calcSpeed');
+        const calcFreq = document.getElementById('calcFreq');
+        const calcWavelength = document.getElementById('calcWavelength');
+
+        function updateCalculator(changed) {
+            const v = parseFloat(calcSpeed.value);
+            const f = parseFloat(calcFreq.value);
+            const lambda = parseFloat(calcWavelength.value);
+
+            if (changed === 'speed') {
+                if (f > 0) {
+                    calcWavelength.value = (v / f).toFixed(2);
+                }
+            } else if (changed === 'freq') {
+                if (f > 0) {
+                    calcWavelength.value = (v / f).toFixed(2);
+                }
+            } else if (changed === 'wavelength') {
+                if (lambda > 0) {
+                    calcFreq.value = Math.round(v / lambda);
+                }
+            }
+        }
+
+        calcSpeed.addEventListener('input', () => updateCalculator('speed'));
+        calcFreq.addEventListener('input', () => updateCalculator('freq'));
+        calcWavelength.addEventListener('input', () => updateCalculator('wavelength'));
+
+        // ============================================
+        // SECTION 3: Audio Frequency Demo
+        // ============================================
+        let audioContext = null;
+        let oscillator = null;
+        let gainNode = null;
+        let isPlaying = false;
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playTone() {
+            initAudio();
+
+            if (isPlaying) {
+                stopTone();
+            }
+
+            oscillator = audioContext.createOscillator();
+            gainNode = audioContext.createGain();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.value = parseInt(document.getElementById('audioFrequency').value);
+            gainNode.gain.value = parseFloat(document.getElementById('audioVolume').value);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.start();
+            isPlaying = true;
+
+            document.getElementById('playTone').textContent = '▶ Playing...';
+            document.getElementById('playTone').style.background = '#4caf50';
+        }
+
+        function stopTone() {
+            if (oscillator) {
+                oscillator.stop();
+                oscillator.disconnect();
+                oscillator = null;
+            }
+            isPlaying = false;
+            document.getElementById('playTone').textContent = '▶ Play Tone';
+            document.getElementById('playTone').style.background = '#0077aa';
+        }
+
+        document.getElementById('playTone').addEventListener('click', playTone);
+        document.getElementById('stopTone').addEventListener('click', stopTone);
+
+        document.getElementById('audioFrequency').addEventListener('input', (e) => {
+            const freq = parseInt(e.target.value);
+            document.getElementById('audioFreqDisplay').textContent = freq;
+
+            if (isPlaying && oscillator) {
+                oscillator.frequency.value = freq;
+            }
+        });
+
+        document.getElementById('audioVolume').addEventListener('input', (e) => {
+            if (isPlaying && gainNode) {
+                gainNode.gain.value = parseFloat(e.target.value);
+            }
+        });
+
+        // ============================================
+        // Navigation highlighting
+        // ============================================
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // ============================================
+        // Initialize everything
+        // ============================================
+        initParticles();
+        initSlinky();
+        animateParticleChain();
+        animateSlinky();
+        animateWaveTypes();
+        animatePlayground();
+        animateLongPlayground();
+    </script>
+</body>
+</html>
