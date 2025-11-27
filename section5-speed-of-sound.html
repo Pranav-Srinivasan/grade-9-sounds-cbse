@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed of Sound in Different Media - Interactive Revision</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .nav a {
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .nav a:hover, .nav a.active {
+            color: #00bcd4;
+        }
+
+        .nav-title {
+            color: #00bcd4;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-right: auto;
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 80px;
+        }
+
+        section {
+            min-height: 100vh;
+            padding: 3rem;
+            border-bottom: 4px solid #ddd;
+            background: #fff;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            color: #0077aa;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin: 2.5rem 0 1rem;
+            color: #005577;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 1.5rem 0 0.75rem;
+            color: #0077aa;
+        }
+
+        .section-number {
+            font-size: 1rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #333;
+            max-width: 900px;
+            margin-bottom: 1rem;
+        }
+
+        .highlight {
+            color: #d32f2f;
+            font-weight: 700;
+            background: #ffebee;
+            padding: 0.1em 0.3em;
+            border-radius: 4px;
+        }
+
+        /* Canvas Container */
+        .canvas-container {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 3px solid #333;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .canvas-container canvas {
+            display: block;
+            border-radius: 8px;
+        }
+
+        .canvas-label {
+            font-size: 1rem;
+            color: #aaa;
+            margin-top: 0.75rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-size: 1rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 220px;
+            height: 10px;
+            -webkit-appearance: none;
+            background: #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #0077aa;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .value-display {
+            font-size: 1.3rem;
+            color: #0077aa;
+            font-weight: 700;
+            min-width: 100px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: #0077aa;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,119,170,0.4);
+        }
+
+        .btn-primary:hover {
+            background: #005580;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #0077aa;
+            border: 3px solid #0077aa;
+        }
+
+        .btn-secondary:hover {
+            background: #e3f2fd;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+            box-shadow: 0 4px 12px rgba(76,175,80,0.4);
+        }
+
+        .btn-success:hover {
+            background: #388e3c;
+        }
+
+        /* Key Points Box */
+        .key-point {
+            background: #e3f2fd;
+            border-left: 6px solid #0077aa;
+            padding: 1.5rem 2rem;
+            margin: 1.5rem 0;
+            border-radius: 0 12px 12px 0;
+            font-size: 1.2rem;
+        }
+
+        .key-point strong {
+            color: #0077aa;
+        }
+
+        /* Data Table */
+        .data-table {
+            width: 100%;
+            max-width: 600px;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .data-table th, .data-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .data-table th {
+            background: #0077aa;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+
+        .data-table tr:hover {
+            background: #e3f2fd;
+        }
+
+        .speed-bar {
+            height: 20px;
+            background: linear-gradient(90deg, #00bcd4, #0077aa);
+            border-radius: 10px;
+            margin-top: 0.5rem;
+        }
+
+        /* Scenario Cards */
+        .scenario-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .scenario-card {
+            background: #fff;
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .scenario-card:hover {
+            border-color: #00bcd4;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .scenario-card.active {
+            border-color: #0077aa;
+            background: #e3f2fd;
+        }
+
+        .scenario-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .scenario-card h4 {
+            color: #0077aa;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .scenario-card p {
+            font-size: 1rem;
+            color: #666;
+            margin: 0;
+        }
+
+        /* Race Track */
+        .race-result {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            font-size: 1.3rem;
+        }
+
+        .race-result .winner {
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .race-result .time {
+            color: #00bcd4;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            background: #f5f5f5;
+            border-top: 3px solid #ddd;
+        }
+
+        .nav-buttons a {
+            text-decoration: none;
+        }
+
+        /* Temperature Display */
+        .temp-display {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #ff5722;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .speed-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0077aa;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <span class="nav-title">Sound & Waves</span>
+        <a href="index.html">1-3. Waves</a>
+        <a href="section4-sound-production.html">4. Sound Production</a>
+        <a href="section5-speed-of-sound.html" class="active">5. Speed of Sound</a>
+        <a href="section6-echo.html">6. Echo</a>
+    </nav>
+
+    <main>
+        <!-- Section 5: Speed of Sound -->
+        <section id="section5">
+            <div class="section-number">Section 5</div>
+            <h1>Speed of Sound in Different Media</h1>
+            <p>
+                Sound doesn't travel at the same speed everywhere! The speed depends on the
+                <span class="highlight">medium</span> through which it travels. Sound is <span class="highlight">fastest in solids</span>
+                and <span class="highlight">slowest in gases</span>.
+            </p>
+
+            <div class="key-point">
+                <strong>Remember:</strong> Speed of sound depends on how <strong>close together</strong> the particles are
+                and how <strong>strong the bonds</strong> between them are.<br><br>
+                <strong>Solids</strong> > <strong>Liquids</strong> > <strong>Gases</strong>
+            </div>
+
+            <!-- Speed Reference Table -->
+            <h2>Speed of Sound - Reference Data (at 25°C)</h2>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Medium</th>
+                        <th>Speed (m/s)</th>
+                        <th>Relative Speed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Aluminium</td>
+                        <td>6420</td>
+                        <td><div class="speed-bar" style="width: 100%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>Steel</td>
+                        <td>5960</td>
+                        <td><div class="speed-bar" style="width: 93%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>Glass</td>
+                        <td>5640</td>
+                        <td><div class="speed-bar" style="width: 88%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>Water (sea)</td>
+                        <td>1531</td>
+                        <td><div class="speed-bar" style="width: 24%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>Water (distilled)</td>
+                        <td>1498</td>
+                        <td><div class="speed-bar" style="width: 23%;"></div></td>
+                    </tr>
+                    <tr>
+                        <td>Air</td>
+                        <td>346</td>
+                        <td><div class="speed-bar" style="width: 5%;"></div></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Sound Race -->
+            <h2>Sound Race - Which Medium Wins?</h2>
+            <p>
+                Watch sound travel through three different media at the same time.
+                The distance is <strong>3 kilometers (3000m)</strong>. Click "Start Race" and see which one arrives first!
+            </p>
+
+            <div class="canvas-container">
+                <canvas id="raceCanvas" width="900" height="350"></canvas>
+                <div class="canvas-label">Watch the sound pulse race through Steel (top), Water (middle), and Air (bottom)</div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-success" id="startRace">Start Race</button>
+                <button class="btn btn-secondary" id="resetRace">Reset</button>
+            </div>
+
+            <div class="race-result" id="raceResult" style="display: none;">
+                <div class="winner" id="winnerText"></div>
+                <div id="timesText"></div>
+            </div>
+
+            <!-- Real-World Scenarios -->
+            <h2>Real-World Examples</h2>
+            <p>Click on each scenario to see the animation and learn how it demonstrates sound speed in different media.</p>
+
+            <div class="scenario-cards">
+                <div class="scenario-card" data-scenario="train">
+                    <div class="icon">🚂</div>
+                    <h4>Train Track</h4>
+                    <p>Put your ear to the rail and hear the train coming before you see it!</p>
+                </div>
+                <div class="scenario-card" data-scenario="telephone">
+                    <div class="icon">📞</div>
+                    <h4>String Telephone</h4>
+                    <p>Two tin cans connected by a taut string - sound travels through the solid string.</p>
+                </div>
+                <div class="scenario-card" data-scenario="whale">
+                    <div class="icon">🐋</div>
+                    <h4>Whale Song</h4>
+                    <p>Whales communicate over hundreds of kilometers because sound travels fast in water!</p>
+                </div>
+                <div class="scenario-card" data-scenario="table">
+                    <div class="icon">🪑</div>
+                    <h4>Knock on Table</h4>
+                    <p>Your friend at the other end hears the knock louder through the table than through air.</p>
+                </div>
+                <div class="scenario-card" data-scenario="scout">
+                    <div class="icon">🏇</div>
+                    <h4>Scouts & Trackers</h4>
+                    <p>Listening to the ground to detect approaching horses from far away.</p>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="scenarioCanvas" width="900" height="350"></canvas>
+                <div class="canvas-label" id="scenarioLabel">Click a scenario card above to see the animation</div>
+            </div>
+
+            <!-- Temperature Effect -->
+            <h2>Effect of Temperature on Sound Speed</h2>
+            <p>
+                Sound travels faster in warmer air because the molecules move faster and collide more frequently.
+                Drag the temperature slider to see how speed changes.
+            </p>
+
+            <div class="canvas-container" style="background: linear-gradient(180deg, #1a1a1a 0%, #2a2a4a 100%);">
+                <div style="display: flex; justify-content: space-around; padding: 2rem;">
+                    <div style="text-align: center;">
+                        <div style="color: #888; font-size: 1rem; margin-bottom: 0.5rem;">TEMPERATURE</div>
+                        <div class="temp-display" id="tempDisplay">25°C</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: #888; font-size: 1rem; margin-bottom: 0.5rem;">SPEED IN AIR</div>
+                        <div class="speed-display" id="speedTempDisplay">346 m/s</div>
+                    </div>
+                </div>
+                <canvas id="tempCanvas" width="900" height="150"></canvas>
+            </div>
+
+            <div class="controls">
+                <div class="control-group" style="flex: 1; max-width: 500px;">
+                    <label>Temperature (-40°C to 100°C)</label>
+                    <input type="range" id="tempSlider" min="-40" max="100" value="25" style="width: 100%;">
+                </div>
+            </div>
+
+            <div class="key-point">
+                <strong>Formula for speed of sound in air:</strong><br>
+                v = 331 + (0.6 × T) m/s<br><br>
+                Where T is temperature in °C.<br>
+                At 0°C: v = 331 m/s<br>
+                At 25°C: v = 331 + 15 = 346 m/s
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <a href="section4-sound-production.html"><button class="btn btn-secondary">← Previous: Sound Production</button></a>
+        <a href="section6-echo.html"><button class="btn btn-primary">Next: Reflection & Echo →</button></a>
+    </div>
+
+    <script>
+        // ============================================
+        // AUDIO SYSTEM FOR RACE
+        // ============================================
+        let raceAudioContext = null;
+
+        function initRaceAudio() {
+            if (!raceAudioContext) {
+                raceAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return raceAudioContext;
+        }
+
+        // Gunshot sound - sharp attack with noise burst
+        function playGunshotSound() {
+            const ctx = initRaceAudio();
+
+            // Create noise buffer for the "bang"
+            const bufferSize = ctx.sampleRate * 0.15; // 150ms
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < bufferSize; i++) {
+                // White noise with exponential decay
+                const decay = Math.exp(-i / (ctx.sampleRate * 0.02));
+                data[i] = (Math.random() * 2 - 1) * decay;
+            }
+
+            const noiseSource = ctx.createBufferSource();
+            noiseSource.buffer = buffer;
+
+            // Low-pass filter for "boom" quality
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 1000;
+            filter.Q.value = 1;
+
+            // High-pass to remove rumble
+            const hipass = ctx.createBiquadFilter();
+            hipass.type = 'highpass';
+            hipass.frequency.value = 100;
+
+            const gainNode = ctx.createGain();
+            gainNode.gain.setValueAtTime(0.6, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+
+            noiseSource.connect(filter);
+            filter.connect(hipass);
+            hipass.connect(gainNode);
+            gainNode.connect(ctx.destination);
+
+            noiseSource.start(ctx.currentTime);
+            noiseSource.stop(ctx.currentTime + 0.15);
+
+            // Add a sharp "crack" component
+            const crackOsc = ctx.createOscillator();
+            crackOsc.type = 'sawtooth';
+            crackOsc.frequency.setValueAtTime(150, ctx.currentTime);
+            crackOsc.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.1);
+
+            const crackGain = ctx.createGain();
+            crackGain.gain.setValueAtTime(0.3, ctx.currentTime);
+            crackGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+
+            crackOsc.connect(crackGain);
+            crackGain.connect(ctx.destination);
+            crackOsc.start(ctx.currentTime);
+            crackOsc.stop(ctx.currentTime + 0.1);
+        }
+
+        // Impact/bullet hit sound - varies by medium
+        function playImpactSound(mediumName) {
+            const ctx = initRaceAudio();
+
+            // Different impact characteristics per medium
+            let freq, duration, filterFreq;
+            switch(mediumName) {
+                case 'Steel':
+                    freq = 800;      // Higher pitch - metallic
+                    duration = 0.2;
+                    filterFreq = 3000;
+                    break;
+                case 'Water':
+                    freq = 400;      // Medium pitch - thud
+                    duration = 0.25;
+                    filterFreq = 1500;
+                    break;
+                case 'Air':
+                    freq = 200;      // Lower pitch - soft thump
+                    duration = 0.3;
+                    filterFreq = 800;
+                    break;
+                default:
+                    freq = 400;
+                    duration = 0.2;
+                    filterFreq = 1500;
+            }
+
+            // Impact noise burst
+            const bufferSize = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < bufferSize; i++) {
+                const decay = Math.exp(-i / (ctx.sampleRate * 0.05));
+                data[i] = (Math.random() * 2 - 1) * decay;
+            }
+
+            const noiseSource = ctx.createBufferSource();
+            noiseSource.buffer = buffer;
+
+            // Bandpass filter for character
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = filterFreq;
+            filter.Q.value = 2;
+
+            const gainNode = ctx.createGain();
+            gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+            noiseSource.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(ctx.destination);
+
+            noiseSource.start(ctx.currentTime);
+            noiseSource.stop(ctx.currentTime + duration);
+
+            // Add tonal "thunk" component
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(freq * 0.5, ctx.currentTime + duration);
+
+            const oscGain = ctx.createGain();
+            oscGain.gain.setValueAtTime(0.25, ctx.currentTime);
+            oscGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration * 0.8);
+
+            osc.connect(oscGain);
+            oscGain.connect(ctx.destination);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + duration);
+        }
+
+        // ============================================
+        // SOUND RACE ANIMATION (Real-time based!)
+        // ============================================
+        const raceCanvas = document.getElementById('raceCanvas');
+        const rCtx = raceCanvas.getContext('2d');
+
+        const tracks = [
+            { name: 'Steel', speed: 5960, color: '#ff9800', y: 70, position: 0, finished: false, time: 0, announced: false, soundPlayed: false },
+            { name: 'Water', speed: 1500, color: '#2196f3', y: 175, position: 0, finished: false, time: 0, announced: false, soundPlayed: false },
+            { name: 'Air', speed: 346, color: '#00bcd4', y: 280, position: 0, finished: false, time: 0, announced: false, soundPlayed: false }
+        ];
+
+        let raceRunning = false;
+        let raceStartTime = 0;
+        let finishOrder = [];
+        const RACE_DISTANCE = 3000; // meters (3 km!)
+        const PIXELS_PER_METER = 0.23; // Adjusted to fit canvas
+        const START_X = 100;
+        const FINISH_X = START_X + RACE_DISTANCE * PIXELS_PER_METER;
+
+        function drawRace() {
+            rCtx.fillStyle = '#1a1a1a';
+            rCtx.fillRect(0, 0, raceCanvas.width, raceCanvas.height);
+
+            // Draw tracks
+            for (const track of tracks) {
+                // Track background
+                rCtx.fillStyle = '#333';
+                rCtx.fillRect(START_X, track.y - 25, FINISH_X - START_X, 50);
+
+                // Track label
+                rCtx.fillStyle = track.color;
+                rCtx.font = 'bold 18px Arial';
+                rCtx.fillText(track.name, 20, track.y + 6);
+
+                // Speed label
+                rCtx.fillStyle = '#888';
+                rCtx.font = '12px Arial';
+                rCtx.fillText(`${track.speed} m/s`, 20, track.y + 22);
+
+                // Draw particles in track
+                const numParticles = track.name === 'Steel' ? 40 : track.name === 'Water' ? 25 : 15;
+                const spacing = (FINISH_X - START_X) / numParticles;
+
+                for (let i = 0; i < numParticles; i++) {
+                    const x = START_X + i * spacing + spacing / 2;
+
+                    // Check if wave has passed this particle
+                    const waveX = START_X + track.position * PIXELS_PER_METER;
+                    const distFromWave = x - waveX;
+
+                    let displacement = 0;
+                    let particleColor = '#555';
+
+                    if (distFromWave > -50 && distFromWave < 0 && track.position > 0) {
+                        // Particle is being displaced by wave
+                        displacement = Math.sin((distFromWave / 50) * Math.PI) * 10;
+                        particleColor = track.color;
+                    } else if (distFromWave >= 0 && distFromWave < 30 && track.position > 0) {
+                        // Just passed
+                        displacement = Math.sin((distFromWave / 30) * Math.PI) * -5;
+                        particleColor = track.color;
+                    }
+
+                    rCtx.fillStyle = particleColor;
+                    rCtx.beginPath();
+                    rCtx.arc(x + displacement, track.y, track.name === 'Steel' ? 8 : track.name === 'Water' ? 6 : 5, 0, Math.PI * 2);
+                    rCtx.fill();
+                }
+
+                // Draw wave front
+                if (track.position > 0 && !track.finished) {
+                    const waveX = START_X + track.position * PIXELS_PER_METER;
+                    rCtx.strokeStyle = track.color;
+                    rCtx.lineWidth = 4;
+                    rCtx.beginPath();
+                    rCtx.moveTo(waveX, track.y - 30);
+                    rCtx.lineTo(waveX, track.y + 30);
+                    rCtx.stroke();
+                }
+
+                // Draw checkmark if finished
+                if (track.finished) {
+                    rCtx.fillStyle = '#4caf50';
+                    rCtx.font = 'bold 24px Arial';
+                    rCtx.fillText('✓', FINISH_X + 20, track.y + 8);
+
+                    rCtx.fillStyle = '#fff';
+                    rCtx.font = 'bold 14px Arial';
+                    rCtx.fillText(`${track.time.toFixed(2)}s`, FINISH_X + 50, track.y + 6);
+                }
+            }
+
+            // Start line
+            rCtx.strokeStyle = '#4caf50';
+            rCtx.lineWidth = 4;
+            rCtx.beginPath();
+            rCtx.moveTo(START_X, 30);
+            rCtx.lineTo(START_X, raceCanvas.height - 30);
+            rCtx.stroke();
+
+            rCtx.fillStyle = '#4caf50';
+            rCtx.font = 'bold 14px Arial';
+            rCtx.fillText('START', START_X - 25, 25);
+
+            // Finish line
+            rCtx.strokeStyle = '#f44336';
+            rCtx.lineWidth = 4;
+            rCtx.beginPath();
+            rCtx.moveTo(FINISH_X, 30);
+            rCtx.lineTo(FINISH_X, raceCanvas.height - 30);
+            rCtx.stroke();
+
+            rCtx.fillStyle = '#f44336';
+            rCtx.font = 'bold 14px Arial';
+            rCtx.fillText('FINISH', FINISH_X - 25, 25);
+            rCtx.fillText('3 km', FINISH_X - 20, raceCanvas.height - 10);
+
+            // Distance markers (every 500m)
+            rCtx.fillStyle = '#666';
+            rCtx.font = '11px Arial';
+            for (let d = 500; d < 3000; d += 500) {
+                const x = START_X + d * PIXELS_PER_METER;
+                rCtx.fillText(`${d >= 1000 ? (d/1000) + 'km' : d + 'm'}`, x - 15, raceCanvas.height - 10);
+                // Small tick mark
+                rCtx.strokeStyle = '#444';
+                rCtx.lineWidth = 1;
+                rCtx.beginPath();
+                rCtx.moveTo(x, raceCanvas.height - 25);
+                rCtx.lineTo(x, raceCanvas.height - 35);
+                rCtx.stroke();
+            }
+
+            // Show live timer and announcements
+            if (raceRunning || finishOrder.length > 0) {
+                const currentElapsed = raceRunning ? (performance.now() - raceStartTime) / 1000 : 0;
+
+                // Live timer
+                if (raceRunning) {
+                    rCtx.fillStyle = '#fff';
+                    rCtx.font = 'bold 16px Arial';
+                    rCtx.fillText(`Time: ${currentElapsed.toFixed(2)}s`, raceCanvas.width - 120, 25);
+                }
+
+                // Finish announcements
+                rCtx.fillStyle = '#ffd700';
+                rCtx.font = 'bold 14px Arial';
+                finishOrder.forEach((item, i) => {
+                    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
+                    rCtx.fillText(`${medal} ${item.name}: ${item.time.toFixed(2)}s`, 20, 320 + i * 18);
+                });
+            }
+        }
+
+        function updateRace() {
+            if (!raceRunning) return;
+
+            // REAL-TIME based animation - elapsed time matches visual time!
+            const currentTime = performance.now();
+            const elapsedSeconds = (currentTime - raceStartTime) / 1000;
+
+            for (const track of tracks) {
+                if (!track.finished) {
+                    // Position = speed × time (physics formula!)
+                    track.position = track.speed * elapsedSeconds;
+                    track.time = elapsedSeconds;
+
+                    if (track.position >= RACE_DISTANCE) {
+                        // Calculate exact finish time
+                        track.time = RACE_DISTANCE / track.speed;
+                        track.position = RACE_DISTANCE;
+                        track.finished = true;
+
+                        // Play impact sound when pulse arrives!
+                        if (!track.soundPlayed) {
+                            track.soundPlayed = true;
+                            playImpactSound(track.name);
+                        }
+
+                        // Announce finish
+                        if (!track.announced) {
+                            track.announced = true;
+                            finishOrder.push({ name: track.name, time: track.time, speed: track.speed });
+                        }
+                    }
+                }
+            }
+
+            // Check if all finished
+            if (tracks.every(t => t.finished)) {
+                raceRunning = false;
+                showRaceResults();
+            }
+
+            drawRace();
+            if (raceRunning) {
+                requestAnimationFrame(updateRace);
+            }
+        }
+
+        function showRaceResults() {
+            const sorted = [...tracks].sort((a, b) => a.time - b.time);
+            const resultDiv = document.getElementById('raceResult');
+            resultDiv.style.display = 'block';
+
+            document.getElementById('winnerText').textContent = `🏆 Winner: ${sorted[0].name} (${sorted[0].speed} m/s)`;
+
+            let timesHtml = '<br><strong>Arrival times for 3 km (3000m):</strong><br><br>';
+            sorted.forEach((track, i) => {
+                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
+                timesHtml += `${medal} <span class="time">${track.name}: ${track.time.toFixed(2)} seconds</span><br>`;
+            });
+
+            const steelTime = tracks.find(t => t.name === 'Steel').time;
+            const airTime = tracks.find(t => t.name === 'Air').time;
+            const waterTime = tracks.find(t => t.name === 'Water').time;
+
+            timesHtml += `<br><strong>Key Insights:</strong><br>`;
+            timesHtml += `• Steel finished in ${steelTime.toFixed(2)}s - Sound arrived almost instantly!<br>`;
+            timesHtml += `• Water took ${waterTime.toFixed(2)}s - About ${(waterTime/steelTime).toFixed(1)}x slower than steel<br>`;
+            timesHtml += `• Air took ${airTime.toFixed(2)}s (${airTime.toFixed(1)} seconds!) - ${(airTime/steelTime).toFixed(0)}x slower than steel!<br>`;
+            timesHtml += `<br><em>The animation ran in REAL TIME - ${airTime.toFixed(1)} seconds to see air finish is how long it actually takes!</em>`;
+
+            document.getElementById('timesText').innerHTML = timesHtml;
+        }
+
+        function resetRace() {
+            raceRunning = false;
+            raceStartTime = 0;
+            finishOrder = [];
+            for (const track of tracks) {
+                track.position = 0;
+                track.finished = false;
+                track.time = 0;
+                track.announced = false;
+                track.soundPlayed = false;  // Reset sound flag
+            }
+            document.getElementById('raceResult').style.display = 'none';
+            drawRace();
+        }
+
+        document.getElementById('startRace').addEventListener('click', () => {
+            if (raceRunning) return;
+            resetRace();
+            raceRunning = true;
+            raceStartTime = performance.now();
+
+            // Play gunshot sound at the start!
+            playGunshotSound();
+
+            updateRace();
+        });
+
+        document.getElementById('resetRace').addEventListener('click', resetRace);
+
+        // ============================================
+        // SCENARIO ANIMATIONS
+        // ============================================
+        const scenarioCanvas = document.getElementById('scenarioCanvas');
+        const sCtx = scenarioCanvas.getContext('2d');
+
+        let currentScenario = null;
+        let scenarioTime = 0;
+        let scenarioAnimating = false;
+
+        const scenarios = {
+            train: {
+                label: 'Train Track: Sound travels through the steel rail much faster than through air',
+                draw: drawTrainScenario
+            },
+            telephone: {
+                label: 'String Telephone: Sound vibrations travel through the taut string (solid) to the other can',
+                draw: drawTelephoneScenario
+            },
+            whale: {
+                label: 'Whale Song: Sound travels ~4.4x faster in water, allowing whales to communicate over vast distances',
+                draw: drawWhaleScenario
+            },
+            table: {
+                label: 'Table Knock: Sound through the solid table reaches your friend faster and clearer than through air',
+                draw: drawTableScenario
+            },
+            scout: {
+                label: 'Scouts: By listening to the ground, they could detect horses from miles away before hearing them in air',
+                draw: drawScoutScenario
+            }
+        };
+
+        function drawTrainScenario() {
+            sCtx.fillStyle = '#87CEEB';
+            sCtx.fillRect(0, 0, scenarioCanvas.width, scenarioCanvas.height * 0.6);
+            sCtx.fillStyle = '#8B4513';
+            sCtx.fillRect(0, scenarioCanvas.height * 0.6, scenarioCanvas.width, scenarioCanvas.height * 0.4);
+
+            // Draw rail
+            sCtx.fillStyle = '#666';
+            sCtx.fillRect(0, scenarioCanvas.height * 0.6 - 10, scenarioCanvas.width, 15);
+
+            // Draw train (far away)
+            const trainX = 50 + Math.sin(scenarioTime * 0.5) * 20;
+            sCtx.fillStyle = '#333';
+            sCtx.fillRect(trainX, scenarioCanvas.height * 0.6 - 60, 80, 50);
+            sCtx.fillStyle = '#f44336';
+            sCtx.fillRect(trainX + 10, scenarioCanvas.height * 0.6 - 50, 15, 15);
+
+            // Draw person listening to rail
+            const personX = 700;
+            sCtx.fillStyle = '#ffcc80';
+            sCtx.beginPath();
+            sCtx.arc(personX, scenarioCanvas.height * 0.6 - 50, 20, 0, Math.PI * 2);
+            sCtx.fill();
+
+            // Body (bent down)
+            sCtx.fillStyle = '#2196f3';
+            sCtx.beginPath();
+            sCtx.ellipse(personX - 30, scenarioCanvas.height * 0.6 - 20, 40, 20, -0.3, 0, Math.PI * 2);
+            sCtx.fill();
+
+            // Sound through rail (fast)
+            const railWaveX = 100 + (scenarioTime * 200) % 600;
+            if (railWaveX < 650) {
+                sCtx.strokeStyle = '#ff9800';
+                sCtx.lineWidth = 4;
+                sCtx.beginPath();
+                sCtx.moveTo(railWaveX, scenarioCanvas.height * 0.6 - 5);
+                sCtx.lineTo(railWaveX + 30, scenarioCanvas.height * 0.6 - 5);
+                sCtx.stroke();
+            }
+
+            // Sound through air (slow)
+            const airWaveX = 100 + (scenarioTime * 30) % 600;
+            if (airWaveX < 650) {
+                for (let i = 0; i < 3; i++) {
+                    sCtx.strokeStyle = `rgba(0, 188, 212, ${0.5 - i * 0.15})`;
+                    sCtx.lineWidth = 2;
+                    sCtx.beginPath();
+                    sCtx.arc(100, scenarioCanvas.height * 0.6 - 40, airWaveX + i * 20, -0.5, 0.5);
+                    sCtx.stroke();
+                }
+            }
+
+            // Labels
+            sCtx.fillStyle = '#ff9800';
+            sCtx.font = 'bold 16px Arial';
+            sCtx.fillText('Sound through rail (FAST)', 300, scenarioCanvas.height * 0.6 + 40);
+
+            sCtx.fillStyle = '#00bcd4';
+            sCtx.fillText('Sound through air (SLOW)', 300, 50);
+        }
+
+        function drawTelephoneScenario() {
+            sCtx.fillStyle = '#e8f5e9';
+            sCtx.fillRect(0, 0, scenarioCanvas.width, scenarioCanvas.height);
+
+            // Draw string
+            const stringY = scenarioCanvas.height / 2;
+            sCtx.strokeStyle = '#795548';
+            sCtx.lineWidth = 3;
+            sCtx.beginPath();
+            sCtx.moveTo(150, stringY);
+            sCtx.lineTo(750, stringY);
+            sCtx.stroke();
+
+            // Draw cans
+            sCtx.fillStyle = '#9e9e9e';
+            sCtx.fillRect(100, stringY - 40, 50, 80);
+            sCtx.fillRect(750, stringY - 40, 50, 80);
+
+            // People
+            // Person 1 (speaking)
+            sCtx.fillStyle = '#ffcc80';
+            sCtx.beginPath();
+            sCtx.arc(70, stringY - 20, 25, 0, Math.PI * 2);
+            sCtx.fill();
+            sCtx.fillStyle = '#4caf50';
+            sCtx.fillRect(50, stringY + 10, 40, 60);
+
+            // Person 2 (listening)
+            sCtx.fillStyle = '#ffcc80';
+            sCtx.beginPath();
+            sCtx.arc(830, stringY - 20, 25, 0, Math.PI * 2);
+            sCtx.fill();
+            sCtx.fillStyle = '#2196f3';
+            sCtx.fillRect(810, stringY + 10, 40, 60);
+
+            // Sound wave through string
+            const waveX = 150 + (scenarioTime * 150) % 600;
+            if (waveX < 750) {
+                sCtx.strokeStyle = '#ff9800';
+                sCtx.lineWidth = 3;
+                for (let i = 0; i < 5; i++) {
+                    const x = waveX + i * 15;
+                    if (x < 750 && x > 150) {
+                        const y = stringY + Math.sin((x + scenarioTime * 50) * 0.1) * 8;
+                        sCtx.beginPath();
+                        sCtx.arc(x, y, 3, 0, Math.PI * 2);
+                        sCtx.stroke();
+                    }
+                }
+            }
+
+            // Labels
+            sCtx.fillStyle = '#333';
+            sCtx.font = 'bold 14px Arial';
+            sCtx.fillText('HELLO!', 50, stringY - 60);
+            sCtx.fillText('Vibrations travel through string', 350, stringY + 80);
+        }
+
+        function drawWhaleScenario() {
+            // Ocean background
+            const gradient = sCtx.createLinearGradient(0, 0, 0, scenarioCanvas.height);
+            gradient.addColorStop(0, '#0077aa');
+            gradient.addColorStop(1, '#003355');
+            sCtx.fillStyle = gradient;
+            sCtx.fillRect(0, 0, scenarioCanvas.width, scenarioCanvas.height);
+
+            // Draw whales
+            // Whale 1
+            sCtx.fillStyle = '#37474f';
+            sCtx.beginPath();
+            sCtx.ellipse(150, 150, 80, 40, 0, 0, Math.PI * 2);
+            sCtx.fill();
+            sCtx.beginPath();
+            sCtx.moveTo(70, 150);
+            sCtx.lineTo(30, 120);
+            sCtx.lineTo(30, 180);
+            sCtx.closePath();
+            sCtx.fill();
+
+            // Whale 2 (far away)
+            sCtx.fillStyle = '#546e7a';
+            sCtx.beginPath();
+            sCtx.ellipse(750, 200, 60, 30, 0, 0, Math.PI * 2);
+            sCtx.fill();
+            sCtx.beginPath();
+            sCtx.moveTo(810, 200);
+            sCtx.lineTo(840, 180);
+            sCtx.lineTo(840, 220);
+            sCtx.closePath();
+            sCtx.fill();
+
+            // Sound waves in water
+            for (let i = 0; i < 5; i++) {
+                const radius = 50 + (scenarioTime * 80 + i * 80) % 600;
+                if (radius < 650) {
+                    sCtx.strokeStyle = `rgba(0, 255, 255, ${0.6 - radius / 1000})`;
+                    sCtx.lineWidth = 3;
+                    sCtx.beginPath();
+                    sCtx.arc(150, 150, radius, -0.5, 0.5);
+                    sCtx.stroke();
+                }
+            }
+
+            // Distance label
+            sCtx.fillStyle = '#fff';
+            sCtx.font = 'bold 18px Arial';
+            sCtx.fillText('Sound travels ~1500 m/s in water', 300, 300);
+            sCtx.font = '14px Arial';
+            sCtx.fillText('Whales can hear each other from 100+ km away!', 280, 330);
+        }
+
+        function drawTableScenario() {
+            sCtx.fillStyle = '#f5f5f5';
+            sCtx.fillRect(0, 0, scenarioCanvas.width, scenarioCanvas.height);
+
+            // Draw table
+            sCtx.fillStyle = '#8d6e63';
+            sCtx.fillRect(100, 180, 700, 30);
+
+            // Table legs
+            sCtx.fillRect(120, 210, 20, 100);
+            sCtx.fillRect(760, 210, 20, 100);
+
+            // Person 1 (knocking)
+            sCtx.fillStyle = '#ffcc80';
+            sCtx.beginPath();
+            sCtx.arc(200, 130, 30, 0, Math.PI * 2);
+            sCtx.fill();
+
+            // Hand knocking
+            sCtx.fillStyle = '#ffcc80';
+            sCtx.beginPath();
+            sCtx.arc(250 + Math.sin(scenarioTime * 10) * 5, 175, 15, 0, Math.PI * 2);
+            sCtx.fill();
+
+            // Person 2 (listening)
+            sCtx.fillStyle = '#ffcc80';
+            sCtx.beginPath();
+            sCtx.arc(700, 130, 30, 0, Math.PI * 2);
+            sCtx.fill();
+
+            // Ear to table
+            sCtx.beginPath();
+            sCtx.arc(680, 170, 10, 0, Math.PI * 2);
+            sCtx.fill();
+
+            // Sound through table (fast)
+            const tableWaveX = 260 + (scenarioTime * 200) % 400;
+            if (tableWaveX < 660) {
+                sCtx.strokeStyle = '#ff9800';
+                sCtx.lineWidth = 4;
+                sCtx.beginPath();
+                sCtx.moveTo(tableWaveX, 195);
+                sCtx.lineTo(tableWaveX + 40, 195);
+                sCtx.stroke();
+            }
+
+            // Sound through air (slow)
+            const airRadius = (scenarioTime * 30) % 300;
+            if (airRadius < 250) {
+                sCtx.strokeStyle = `rgba(0, 188, 212, ${0.5 - airRadius / 500})`;
+                sCtx.lineWidth = 2;
+                sCtx.beginPath();
+                sCtx.arc(250, 175, airRadius, -1, 1);
+                sCtx.stroke();
+            }
+
+            // Labels
+            sCtx.fillStyle = '#ff9800';
+            sCtx.font = 'bold 14px Arial';
+            sCtx.fillText('Through table: LOUD & FAST', 350, 250);
+
+            sCtx.fillStyle = '#00bcd4';
+            sCtx.fillText('Through air: soft & slow', 350, 80);
+
+            sCtx.fillStyle = '#d32f2f';
+            sCtx.font = 'bold 16px Arial';
+            sCtx.fillText('KNOCK!', 230, 150);
+        }
+
+        function drawScoutScenario() {
+            // Sky and ground
+            sCtx.fillStyle = '#87CEEB';
+            sCtx.fillRect(0, 0, scenarioCanvas.width, scenarioCanvas.height * 0.5);
+            sCtx.fillStyle = '#c8a96e';
+            sCtx.fillRect(0, scenarioCanvas.height * 0.5, scenarioCanvas.width, scenarioCanvas.height * 0.5);
+
+            // Grass tufts
+            sCtx.fillStyle = '#7cb342';
+            for (let i = 0; i < 20; i++) {
+                sCtx.fillRect(i * 50 + 10, scenarioCanvas.height * 0.5 - 10, 30, 15);
+            }
+
+            // Scout listening to ground
+            const scoutX = 700;
+            sCtx.fillStyle = '#ffcc80';
+            sCtx.beginPath();
+            sCtx.arc(scoutX, scenarioCanvas.height * 0.5 + 20, 20, 0, Math.PI * 2);
+            sCtx.fill();
+
+            // Body (lying down)
+            sCtx.fillStyle = '#795548';
+            sCtx.beginPath();
+            sCtx.ellipse(scoutX - 50, scenarioCanvas.height * 0.5 + 30, 50, 15, 0, 0, Math.PI * 2);
+            sCtx.fill();
+
+            // Ear to ground indicator
+            sCtx.strokeStyle = '#4caf50';
+            sCtx.lineWidth = 2;
+            sCtx.setLineDash([5, 5]);
+            sCtx.beginPath();
+            sCtx.moveTo(scoutX, scenarioCanvas.height * 0.5 + 40);
+            sCtx.lineTo(scoutX, scenarioCanvas.height * 0.5 + 10);
+            sCtx.stroke();
+            sCtx.setLineDash([]);
+
+            // Horses far away
+            const horseX = 100 + Math.sin(scenarioTime * 0.5) * 30;
+            for (let i = 0; i < 3; i++) {
+                sCtx.fillStyle = '#5d4037';
+                sCtx.fillRect(horseX + i * 40, scenarioCanvas.height * 0.5 - 50, 30, 40);
+                sCtx.fillRect(horseX + i * 40 + 5, scenarioCanvas.height * 0.5 - 10, 5, 20);
+                sCtx.fillRect(horseX + i * 40 + 20, scenarioCanvas.height * 0.5 - 10, 5, 20);
+            }
+
+            // Ground vibrations (fast)
+            const groundWaveX = 150 + (scenarioTime * 180) % 500;
+            if (groundWaveX < 680) {
+                sCtx.strokeStyle = '#ff9800';
+                sCtx.lineWidth = 4;
+                sCtx.beginPath();
+                sCtx.moveTo(groundWaveX, scenarioCanvas.height * 0.5 + 30);
+                sCtx.lineTo(groundWaveX + 40, scenarioCanvas.height * 0.5 + 30);
+                sCtx.stroke();
+            }
+
+            // Sound through air (much slower)
+            const airWaveX = 150 + (scenarioTime * 25) % 500;
+            if (airWaveX < 680) {
+                sCtx.strokeStyle = 'rgba(0, 188, 212, 0.5)';
+                sCtx.lineWidth = 2;
+                sCtx.beginPath();
+                sCtx.arc(120, scenarioCanvas.height * 0.5 - 30, airWaveX, -0.3, 0.3);
+                sCtx.stroke();
+            }
+
+            // Labels
+            sCtx.fillStyle = '#fff';
+            sCtx.font = 'bold 14px Arial';
+            sCtx.fillText('Hoofbeats!', 100, 50);
+
+            sCtx.fillStyle = '#ff9800';
+            sCtx.fillText('Ground vibrations arrive first!', 350, scenarioCanvas.height - 30);
+        }
+
+        function animateScenario() {
+            if (!scenarioAnimating || !currentScenario) return;
+
+            scenarioTime += 0.016;
+            scenarios[currentScenario].draw();
+            requestAnimationFrame(animateScenario);
+        }
+
+        function drawEmptyScenario() {
+            sCtx.fillStyle = '#1a1a1a';
+            sCtx.fillRect(0, 0, scenarioCanvas.width, scenarioCanvas.height);
+
+            sCtx.fillStyle = '#666';
+            sCtx.font = '24px Arial';
+            sCtx.textAlign = 'center';
+            sCtx.fillText('Click a scenario card above to see the animation', scenarioCanvas.width / 2, scenarioCanvas.height / 2);
+            sCtx.textAlign = 'left';
+        }
+
+        document.querySelectorAll('.scenario-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+
+                currentScenario = card.dataset.scenario;
+                scenarioTime = 0;
+                document.getElementById('scenarioLabel').textContent = scenarios[currentScenario].label;
+
+                if (!scenarioAnimating) {
+                    scenarioAnimating = true;
+                    animateScenario();
+                }
+            });
+        });
+
+        // ============================================
+        // TEMPERATURE EFFECT
+        // ============================================
+        const tempCanvas = document.getElementById('tempCanvas');
+        const tCtx = tempCanvas.getContext('2d');
+
+        let temperature = 25;
+        let tempAnimTime = 0;
+
+        function calculateSpeed(temp) {
+            return 331 + (0.6 * temp);
+        }
+
+        function drawTempEffect() {
+            tCtx.fillStyle = '#1a1a1a';
+            tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+            const speed = calculateSpeed(temperature);
+            const centerY = tempCanvas.height / 2;
+
+            // Draw air molecules with varying speed
+            const numMolecules = 30;
+            const moleculeSpeed = speed / 346; // Relative to room temp
+
+            for (let i = 0; i < numMolecules; i++) {
+                const baseX = 50 + (i / numMolecules) * (tempCanvas.width - 100);
+
+                // Wave propagation
+                const phase = tempAnimTime * moleculeSpeed * 2 - (baseX / 50);
+                const displacement = Math.sin(phase) * 15;
+
+                // Temperature affects molecule "energy" (visual jitter)
+                const jitter = temperature > 0 ? (temperature / 100) * 5 * (Math.random() - 0.5) : 0;
+
+                const x = baseX + displacement;
+                const y = centerY + jitter;
+
+                // Color based on temperature
+                let color;
+                if (temperature < 0) {
+                    color = '#2196f3'; // Cold - blue
+                } else if (temperature < 30) {
+                    color = '#00bcd4'; // Normal - cyan
+                } else if (temperature < 60) {
+                    color = '#ff9800'; // Warm - orange
+                } else {
+                    color = '#f44336'; // Hot - red
+                }
+
+                tCtx.fillStyle = color;
+                tCtx.beginPath();
+                tCtx.arc(x, y, 8, 0, Math.PI * 2);
+                tCtx.fill();
+            }
+
+            // Wave direction indicator
+            const waveX = 50 + (tempAnimTime * speed * 0.3) % (tempCanvas.width - 100);
+            tCtx.strokeStyle = '#fff';
+            tCtx.lineWidth = 2;
+            tCtx.beginPath();
+            tCtx.moveTo(waveX, centerY - 30);
+            tCtx.lineTo(waveX, centerY + 30);
+            tCtx.stroke();
+
+            tCtx.fillStyle = '#fff';
+            tCtx.font = '12px Arial';
+            tCtx.fillText('Wave front →', waveX + 10, centerY - 35);
+        }
+
+        function animateTemp() {
+            tempAnimTime += 0.02;
+            drawTempEffect();
+            requestAnimationFrame(animateTemp);
+        }
+
+        document.getElementById('tempSlider').addEventListener('input', (e) => {
+            temperature = parseInt(e.target.value);
+            const speed = calculateSpeed(temperature);
+
+            document.getElementById('tempDisplay').textContent = `${temperature}°C`;
+            document.getElementById('speedTempDisplay').textContent = `${speed.toFixed(0)} m/s`;
+
+            // Update color of temp display
+            const tempDisplay = document.getElementById('tempDisplay');
+            if (temperature < 0) {
+                tempDisplay.style.color = '#2196f3';
+            } else if (temperature < 30) {
+                tempDisplay.style.color = '#ff9800';
+            } else {
+                tempDisplay.style.color = '#f44336';
+            }
+        });
+
+        // ============================================
+        // Initialize
+        // ============================================
+        drawRace();
+        drawEmptyScenario();
+        animateTemp();
+    </script>
+</body>
+</html>

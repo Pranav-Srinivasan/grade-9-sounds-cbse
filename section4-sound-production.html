@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sound Production & Transmission - Interactive Revision</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .nav a {
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .nav a:hover, .nav a.active {
+            color: #00bcd4;
+        }
+
+        .nav-title {
+            color: #00bcd4;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-right: auto;
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 80px;
+        }
+
+        section {
+            min-height: 100vh;
+            padding: 3rem;
+            border-bottom: 4px solid #ddd;
+            background: #fff;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            color: #0077aa;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin: 2.5rem 0 1rem;
+            color: #005577;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 1.5rem 0 0.75rem;
+            color: #0077aa;
+        }
+
+        .section-number {
+            font-size: 1rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #333;
+            max-width: 900px;
+            margin-bottom: 1rem;
+        }
+
+        .highlight {
+            color: #d32f2f;
+            font-weight: 700;
+            background: #ffebee;
+            padding: 0.1em 0.3em;
+            border-radius: 4px;
+        }
+
+        /* Canvas Container */
+        .canvas-container {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 3px solid #333;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .canvas-container canvas {
+            display: block;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .canvas-label {
+            font-size: 1rem;
+            color: #aaa;
+            margin-top: 0.75rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-size: 1rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 220px;
+            height: 10px;
+            -webkit-appearance: none;
+            background: #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #0077aa;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .value-display {
+            font-size: 1.3rem;
+            color: #0077aa;
+            font-weight: 700;
+            min-width: 100px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: #0077aa;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,119,170,0.4);
+        }
+
+        .btn-primary:hover {
+            background: #005580;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #0077aa;
+            border: 3px solid #0077aa;
+        }
+
+        .btn-secondary:hover {
+            background: #e3f2fd;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+            box-shadow: 0 4px 12px rgba(211,47,47,0.4);
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+            box-shadow: 0 4px 12px rgba(76,175,80,0.4);
+        }
+
+        .btn-success:hover {
+            background: #388e3c;
+        }
+
+        /* Key Points Box */
+        .key-point {
+            background: #e3f2fd;
+            border-left: 6px solid #0077aa;
+            padding: 1.5rem 2rem;
+            margin: 1.5rem 0;
+            border-radius: 0 12px 12px 0;
+            font-size: 1.2rem;
+        }
+
+        .key-point strong {
+            color: #0077aa;
+        }
+
+        /* Split View */
+        .split-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        @media (max-width: 1000px) {
+            .split-view {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .split-panel {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 3px solid #333;
+        }
+
+        .split-panel h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #00bcd4;
+        }
+
+        .split-panel p {
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+
+        /* Medium Selector */
+        .medium-selector {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .medium-btn {
+            padding: 1rem 2rem;
+            border: 3px solid #333;
+            border-radius: 12px;
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .medium-btn:hover {
+            border-color: #00bcd4;
+        }
+
+        .medium-btn.active {
+            border-color: #00bcd4;
+            background: #003344;
+        }
+
+        .medium-btn .icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Vacuum Toggle */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 80px;
+            height: 40px;
+            background: #ccc;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #d32f2f;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 32px;
+            height: 32px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(40px);
+        }
+
+        .toggle-label {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .status-air {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+
+        .status-vacuum {
+            background: #ffebee;
+            color: #c62828;
+            border: 2px solid #f44336;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            background: #f5f5f5;
+            border-top: 3px solid #ddd;
+        }
+
+        .nav-buttons a {
+            text-decoration: none;
+        }
+
+        /* Click instruction */
+        .click-instruction {
+            background: #e8f5e9;
+            border: 2px dashed #4caf50;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            margin: 1rem 0;
+            font-size: 1.1rem;
+            color: #2e7d32;
+            font-weight: 600;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <span class="nav-title">Sound & Waves</span>
+        <a href="index.html">1-3. Waves</a>
+        <a href="section4-sound-production.html" class="active">4. Sound Production</a>
+        <a href="section5-speed-of-sound.html">5. Speed of Sound</a>
+        <a href="section6-echo.html">6. Echo</a>
+    </nav>
+
+    <main>
+        <!-- Section 4: Sound Production & Transmission -->
+        <section id="section4">
+            <div class="section-number">Section 4</div>
+            <h1>Sound - Production & Transmission</h1>
+            <p>
+                Sound is produced when objects <span class="highlight">vibrate</span>. These vibrations create
+                alternating regions of <span class="highlight">compression</span> (high pressure) and
+                <span class="highlight">rarefaction</span> (low pressure) in the surrounding medium.
+            </p>
+
+            <div class="key-point">
+                <strong>Key Concept:</strong> Sound needs a <strong>medium</strong> (solid, liquid, or gas) to travel through.
+                Sound CANNOT travel through a vacuum (empty space) because there are no particles to vibrate!
+            </div>
+
+            <!-- Tuning Fork Simulator -->
+            <h2>Tuning Fork Simulator</h2>
+            <p>Click the tuning fork to strike it. Watch how the vibrating prongs create compressions and rarefactions in the air!</p>
+
+            <div class="click-instruction">
+                Click the tuning fork to strike it!
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="tuningForkCanvas" width="900" height="350"></canvas>
+                <div class="canvas-label">Tuning fork vibrations create sound waves - watch the compressions (dense) and rarefactions (sparse) travel outward</div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="strikeFork">Strike Fork</button>
+                <button class="btn btn-secondary" id="resetFork">Reset</button>
+            </div>
+
+            <!-- Speaker Cone Animation -->
+            <h2>Speaker Cone Animation</h2>
+            <p>See how a speaker cone creates sound by pushing and pulling air molecules.</p>
+
+            <div class="canvas-container">
+                <canvas id="speakerCanvas" width="900" height="300"></canvas>
+                <div class="canvas-label">Speaker cone pushes air forward (compression) and pulls back (rarefaction) to create sound waves</div>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Frequency</label>
+                    <input type="range" id="speakerFreq" min="0.5" max="3" step="0.1" value="1.5">
+                </div>
+                <div class="control-group">
+                    <label>Amplitude</label>
+                    <input type="range" id="speakerAmp" min="10" max="40" value="25">
+                </div>
+                <button class="btn btn-secondary" id="toggleSpeaker">Pause</button>
+            </div>
+
+            <!-- Vacuum Chamber -->
+            <h2>Vacuum Chamber Experiment</h2>
+            <p>
+                A classic experiment: a ringing bell inside a bell jar. When we remove the air,
+                what happens to the sound?
+            </p>
+
+            <div class="controls">
+                <button class="btn btn-success" id="startBellExperiment">Start Experiment (Bell Rings)</button>
+                <button class="btn btn-secondary" id="stopBellExperiment">Stop Experiment</button>
+            </div>
+
+            <div class="toggle-container">
+                <span class="toggle-label" style="font-weight: 700;">Remove Air:</span>
+                <div class="toggle-switch" id="vacuumToggle"></div>
+                <span class="toggle-label" id="vacuumLabel">Air Present</span>
+            </div>
+
+            <div id="vacuumStatus" class="status-indicator status-air">Sound can travel - Start the experiment to hear the bell!</div>
+
+            <div class="canvas-container">
+                <canvas id="vacuumCanvas" width="900" height="400"></canvas>
+                <div class="canvas-label">Start the experiment, then toggle "Remove Air" - watch AND hear the sound disappear!</div>
+            </div>
+
+            <div class="key-point">
+                <strong>The Vacuum Experiment proves:</strong> Sound needs a medium to travel.
+                In outer space (vacuum), astronauts cannot hear each other speak directly - they must use radios (which use electromagnetic waves, not sound waves)!
+            </div>
+
+            <!-- Medium Selector -->
+            <h2>Sound in Different Media</h2>
+            <p>
+                Sound travels through solids, liquids, and gases - but the particles are packed differently in each.
+                Click each medium to see how particles transmit vibrations.
+            </p>
+
+            <div class="medium-selector">
+                <button class="medium-btn active" data-medium="gas">
+                    <span class="icon">💨</span>
+                    Gas (Air)
+                </button>
+                <button class="medium-btn" data-medium="liquid">
+                    <span class="icon">💧</span>
+                    Liquid (Water)
+                </button>
+                <button class="medium-btn" data-medium="solid">
+                    <span class="icon">🧱</span>
+                    Solid (Metal)
+                </button>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="mediumCanvas" width="900" height="300"></canvas>
+                <div class="canvas-label" id="mediumLabel">Gas: Particles are far apart - sound travels slower (346 m/s in air)</div>
+            </div>
+
+            <div class="key-point">
+                <strong>Why does sound travel fastest in solids?</strong><br>
+                In solids, particles are <strong>closely packed</strong> and have <strong>strong bonds</strong>.
+                When one particle vibrates, it quickly passes the vibration to its neighbor.
+                In gases, particles are far apart and must travel farther to bump into the next particle.
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <a href="index.html"><button class="btn btn-secondary">← Previous: Wave Properties</button></a>
+        <a href="section5-speed-of-sound.html"><button class="btn btn-primary">Next: Speed of Sound →</button></a>
+    </div>
+
+    <script>
+        // ============================================
+        // TUNING FORK SIMULATOR
+        // ============================================
+        const tuningForkCanvas = document.getElementById('tuningForkCanvas');
+        const tfCtx = tuningForkCanvas.getContext('2d');
+
+        let forkVibrating = false;
+        let forkTime = 0;
+        let forkDecay = 1;
+        let soundWaves = [];
+
+        function drawTuningFork() {
+            tfCtx.fillStyle = '#1a1a1a';
+            tfCtx.fillRect(0, 0, tuningForkCanvas.width, tuningForkCanvas.height);
+
+            const centerX = 150;
+            const centerY = tuningForkCanvas.height / 2;
+
+            // Fork vibration offset
+            const vibration = forkVibrating ? Math.sin(forkTime * 15) * 8 * forkDecay : 0;
+
+            // Draw handle
+            tfCtx.fillStyle = '#888';
+            tfCtx.fillRect(centerX - 10, centerY + 50, 20, 100);
+
+            // Draw base
+            tfCtx.fillStyle = '#666';
+            tfCtx.beginPath();
+            tfCtx.roundRect(centerX - 30, centerY + 30, 60, 30, 5);
+            tfCtx.fill();
+
+            // Draw left prong
+            tfCtx.fillStyle = '#aaa';
+            tfCtx.save();
+            tfCtx.translate(centerX - 20 - vibration, centerY);
+            tfCtx.fillRect(-8, -120, 16, 150);
+            tfCtx.beginPath();
+            tfCtx.arc(0, -120, 8, 0, Math.PI * 2);
+            tfCtx.fill();
+            tfCtx.restore();
+
+            // Draw right prong
+            tfCtx.save();
+            tfCtx.translate(centerX + 20 + vibration, centerY);
+            tfCtx.fillRect(-8, -120, 16, 150);
+            tfCtx.beginPath();
+            tfCtx.arc(0, -120, 8, 0, Math.PI * 2);
+            tfCtx.fill();
+            tfCtx.restore();
+
+            // Draw vibration lines when active
+            if (forkVibrating && forkDecay > 0.1) {
+                tfCtx.strokeStyle = `rgba(255, 152, 0, ${forkDecay * 0.5})`;
+                tfCtx.lineWidth = 2;
+                for (let i = 0; i < 3; i++) {
+                    const offset = (i + 1) * 5;
+                    // Left prong vibration lines
+                    tfCtx.beginPath();
+                    tfCtx.moveTo(centerX - 35 - offset, centerY - 100);
+                    tfCtx.lineTo(centerX - 35 - offset, centerY + 20);
+                    tfCtx.stroke();
+                    // Right prong vibration lines
+                    tfCtx.beginPath();
+                    tfCtx.moveTo(centerX + 35 + offset, centerY - 100);
+                    tfCtx.lineTo(centerX + 35 + offset, centerY + 20);
+                    tfCtx.stroke();
+                }
+            }
+
+            // Draw sound waves
+            for (let i = soundWaves.length - 1; i >= 0; i--) {
+                const wave = soundWaves[i];
+                wave.radius += 3;
+                wave.opacity -= 0.008;
+
+                if (wave.opacity <= 0) {
+                    soundWaves.splice(i, 1);
+                    continue;
+                }
+
+                // Draw compression (darker arc)
+                tfCtx.strokeStyle = `rgba(255, 152, 0, ${wave.opacity})`;
+                tfCtx.lineWidth = 4;
+                tfCtx.beginPath();
+                tfCtx.arc(centerX + 50, centerY - 30, wave.radius, -Math.PI / 3, Math.PI / 3);
+                tfCtx.stroke();
+
+                // Draw rarefaction (lighter arc)
+                if (wave.radius > 30) {
+                    tfCtx.strokeStyle = `rgba(33, 150, 243, ${wave.opacity * 0.7})`;
+                    tfCtx.lineWidth = 3;
+                    tfCtx.beginPath();
+                    tfCtx.arc(centerX + 50, centerY - 30, wave.radius - 25, -Math.PI / 3, Math.PI / 3);
+                    tfCtx.stroke();
+                }
+            }
+
+            // Draw air particles
+            const particleStartX = 250;
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 12; col++) {
+                    const baseX = particleStartX + col * 50;
+                    const baseY = 60 + row * 60;
+
+                    // Calculate displacement based on nearest wave
+                    let displacement = 0;
+                    for (const wave of soundWaves) {
+                        const dist = Math.sqrt((baseX - (centerX + 50)) ** 2 + (baseY - (centerY - 30)) ** 2);
+                        if (Math.abs(dist - wave.radius) < 30) {
+                            const phase = (dist - wave.radius) / 30 * Math.PI;
+                            displacement = Math.sin(phase) * 15 * wave.opacity;
+                        }
+                    }
+
+                    const x = baseX + displacement;
+
+                    // Color based on compression/rarefaction
+                    let color = '#00bcd4';
+                    if (displacement > 5) color = '#ff9800'; // Compression
+                    if (displacement < -5) color = '#2196f3'; // Rarefaction
+
+                    tfCtx.fillStyle = color;
+                    tfCtx.beginPath();
+                    tfCtx.arc(x, baseY, 8, 0, Math.PI * 2);
+                    tfCtx.fill();
+                }
+            }
+
+            // Labels
+            tfCtx.fillStyle = '#fff';
+            tfCtx.font = 'bold 16px Arial';
+            tfCtx.fillText('Tuning Fork', centerX - 50, 30);
+
+            tfCtx.fillStyle = '#ff9800';
+            tfCtx.fillText('Orange = Compression (high pressure)', 550, 30);
+            tfCtx.fillStyle = '#2196f3';
+            tfCtx.fillText('Blue = Rarefaction (low pressure)', 550, 55);
+
+            if (!forkVibrating) {
+                tfCtx.fillStyle = '#4caf50';
+                tfCtx.font = 'bold 14px Arial';
+                tfCtx.fillText('Click to strike!', centerX - 40, tuningForkCanvas.height - 20);
+            }
+        }
+
+        function strikeTuningFork() {
+            forkVibrating = true;
+            forkDecay = 1;
+            forkTime = 0;
+            soundWaves = [];
+        }
+
+        function updateTuningFork() {
+            if (forkVibrating) {
+                forkTime += 0.1;
+                forkDecay *= 0.995;
+
+                // Generate new wave every few frames
+                if (forkTime % 8 < 0.1 && forkDecay > 0.1) {
+                    soundWaves.push({ radius: 30, opacity: forkDecay });
+                }
+
+                if (forkDecay < 0.01) {
+                    forkVibrating = false;
+                }
+            }
+
+            drawTuningFork();
+            requestAnimationFrame(updateTuningFork);
+        }
+
+        tuningForkCanvas.addEventListener('click', strikeTuningFork);
+        document.getElementById('strikeFork').addEventListener('click', strikeTuningFork);
+        document.getElementById('resetFork').addEventListener('click', () => {
+            forkVibrating = false;
+            soundWaves = [];
+            forkDecay = 1;
+        });
+
+        // ============================================
+        // SPEAKER CONE ANIMATION
+        // ============================================
+        const speakerCanvas = document.getElementById('speakerCanvas');
+        const spCtx = speakerCanvas.getContext('2d');
+
+        let speakerTime = 0;
+        let speakerFreq = 1.5;
+        let speakerAmp = 25;
+        let speakerPaused = false;
+
+        function drawSpeaker() {
+            spCtx.fillStyle = '#1a1a1a';
+            spCtx.fillRect(0, 0, speakerCanvas.width, speakerCanvas.height);
+
+            const centerY = speakerCanvas.height / 2;
+            const coneX = 120;
+
+            // Speaker cone displacement
+            const coneDisplacement = Math.sin(speakerTime) * speakerAmp;
+
+            // Draw speaker body (box)
+            spCtx.fillStyle = '#333';
+            spCtx.fillRect(20, centerY - 80, 80, 160);
+
+            // Draw speaker rim
+            spCtx.fillStyle = '#555';
+            spCtx.beginPath();
+            spCtx.ellipse(100, centerY, 15, 70, 0, 0, Math.PI * 2);
+            spCtx.fill();
+
+            // Draw cone
+            spCtx.fillStyle = '#888';
+            spCtx.beginPath();
+            spCtx.moveTo(coneX + coneDisplacement, centerY);
+            spCtx.lineTo(100, centerY - 60);
+            spCtx.lineTo(100, centerY + 60);
+            spCtx.closePath();
+            spCtx.fill();
+
+            // Draw cone center
+            spCtx.fillStyle = '#666';
+            spCtx.beginPath();
+            spCtx.arc(coneX + coneDisplacement, centerY, 20, 0, Math.PI * 2);
+            spCtx.fill();
+
+            // Draw air particles with wave effect - increased columns to fill screen
+            const numCols = 25;  // Increased to 25 columns
+            const numRows = 7;   // 7 rows for height
+            const startX = 150;
+            const colSpacing = 30; // Tighter spacing to fit 25 columns
+            const rowSpacing = 32;
+            const topY = 45;
+
+            for (let row = 0; row < numRows; row++) {
+                for (let col = 0; col < numCols; col++) {
+                    const baseX = startX + col * colSpacing;
+                    const baseY = topY + row * rowSpacing;
+
+                    // Wave propagation
+                    const distance = col * colSpacing;
+                    const phase = speakerTime - distance * 0.03 * speakerFreq;
+                    const displacement = Math.sin(phase) * speakerAmp * 0.4;
+
+                    const x = baseX + displacement;
+
+                    // Color coding
+                    let color = '#00bcd4';
+                    const compression = Math.sin(phase);
+                    if (compression > 0.4) color = '#ff9800';
+                    else if (compression < -0.4) color = '#2196f3';
+
+                    spCtx.fillStyle = color;
+                    spCtx.beginPath();
+                    spCtx.arc(x, baseY, 6, 0, Math.PI * 2);
+                    spCtx.fill();
+                }
+            }
+
+            // Calculate wavelength in pixels
+            // Phase at position x: phase = speakerTime - x * 0.03 * speakerFreq
+            // One wavelength = 2π phase change = 2π / (0.03 * speakerFreq) pixels
+            const wavelengthPixels = (2 * Math.PI) / (0.03 * speakerFreq);
+            const endX = startX + (numCols - 1) * colSpacing;
+            const rulerY = speakerCanvas.height - 25;
+
+            // Show λ marker every 4th wave cycle
+            const showEvery = 4;
+
+            // Calculate the offset so λ markers move with the wave
+            // The wave moves right, so the offset increases with time
+            const waveOffset = (speakerTime / (0.03 * speakerFreq)) % (wavelengthPixels * showEvery);
+
+            // Draw λ markers from start to end, every 4th wavelength
+            spCtx.strokeStyle = '#4caf50';
+            spCtx.fillStyle = '#4caf50';
+            spCtx.font = 'bold 16px Arial';
+
+            // Start position for first λ (accounting for wave movement)
+            let lambdaStart = startX + waveOffset - wavelengthPixels * showEvery;
+
+            // Draw each λ marker
+            while (lambdaStart < endX) {
+                const lambdaEnd = lambdaStart + wavelengthPixels;
+
+                // Only draw if visible
+                if (lambdaEnd > startX && lambdaStart < endX) {
+                    // Clamp to visible area
+                    const drawStart = Math.max(startX, lambdaStart);
+                    const drawEnd = Math.min(endX, lambdaEnd);
+
+                    if (drawEnd - drawStart > 30) {
+                        // Draw vertical tick at start
+                        spCtx.strokeStyle = '#4caf50';
+                        spCtx.lineWidth = 2;
+                        if (lambdaStart >= startX) {
+                            spCtx.beginPath();
+                            spCtx.moveTo(lambdaStart, rulerY - 10);
+                            spCtx.lineTo(lambdaStart, rulerY + 10);
+                            spCtx.stroke();
+                        }
+
+                        // Draw vertical tick at end
+                        if (lambdaEnd <= endX) {
+                            spCtx.beginPath();
+                            spCtx.moveTo(lambdaEnd, rulerY - 10);
+                            spCtx.lineTo(lambdaEnd, rulerY + 10);
+                            spCtx.stroke();
+                        }
+
+                        // Draw horizontal bracket line
+                        spCtx.lineWidth = 3;
+                        spCtx.beginPath();
+                        spCtx.moveTo(drawStart, rulerY);
+                        spCtx.lineTo(drawEnd, rulerY);
+                        spCtx.stroke();
+
+                        // Draw arrows
+                        spCtx.lineWidth = 2;
+                        if (lambdaStart >= startX) {
+                            spCtx.beginPath();
+                            spCtx.moveTo(lambdaStart + 10, rulerY - 5);
+                            spCtx.lineTo(lambdaStart, rulerY);
+                            spCtx.lineTo(lambdaStart + 10, rulerY + 5);
+                            spCtx.stroke();
+                        }
+                        if (lambdaEnd <= endX) {
+                            spCtx.beginPath();
+                            spCtx.moveTo(lambdaEnd - 10, rulerY - 5);
+                            spCtx.lineTo(lambdaEnd, rulerY);
+                            spCtx.lineTo(lambdaEnd - 10, rulerY + 5);
+                            spCtx.stroke();
+                        }
+
+                        // Draw λ symbol in the middle
+                        const midX = (drawStart + drawEnd) / 2;
+                        spCtx.fillStyle = '#4caf50';
+                        spCtx.fillText('λ', midX - 7, rulerY - 14);
+                    }
+                }
+
+                // Move to next λ position (skip 4 wavelengths)
+                lambdaStart += wavelengthPixels * showEvery;
+            }
+
+            // Wavelength info display
+            spCtx.fillStyle = '#4caf50';
+            spCtx.font = 'bold 14px Arial';
+            spCtx.fillText(`Wavelength (λ): ${wavelengthPixels.toFixed(0)} px`, speakerCanvas.width - 180, 25);
+            spCtx.fillStyle = '#888';
+            spCtx.font = '12px Arial';
+            spCtx.fillText('Higher freq = Shorter λ', speakerCanvas.width - 180, 42);
+
+            // Labels
+            spCtx.fillStyle = '#fff';
+            spCtx.font = 'bold 16px Arial';
+            spCtx.fillText('Speaker', 30, 25);
+
+            // Direction arrow
+            spCtx.fillStyle = '#00bcd4';
+            spCtx.font = 'bold 14px Arial';
+            spCtx.fillText('Sound Direction →', 30, 45);
+
+            // Legend at bottom left
+            spCtx.fillStyle = '#ff9800';
+            spCtx.font = 'bold 11px Arial';
+            spCtx.fillText('Orange = Compression', 30, speakerCanvas.height - 18);
+            spCtx.fillStyle = '#2196f3';
+            spCtx.fillText('Blue = Rarefaction', 30, speakerCanvas.height - 5);
+
+            // Cone movement label
+            spCtx.fillStyle = '#4caf50';
+            spCtx.font = 'bold 12px Arial';
+            const moveLabel = coneDisplacement > 0 ? 'PUSH →' : '← PULL';
+            spCtx.fillText(moveLabel, coneX - 10, centerY + 100);
+        }
+
+        function animateSpeaker() {
+            if (!speakerPaused) {
+                speakerTime += 0.08 * speakerFreq;
+            }
+            drawSpeaker();
+            requestAnimationFrame(animateSpeaker);
+        }
+
+        document.getElementById('speakerFreq').addEventListener('input', (e) => {
+            speakerFreq = parseFloat(e.target.value);
+        });
+
+        document.getElementById('speakerAmp').addEventListener('input', (e) => {
+            speakerAmp = parseInt(e.target.value);
+        });
+
+        document.getElementById('toggleSpeaker').addEventListener('click', (e) => {
+            speakerPaused = !speakerPaused;
+            e.target.textContent = speakerPaused ? 'Play' : 'Pause';
+        });
+
+        // ============================================
+        // VACUUM CHAMBER
+        // ============================================
+        const vacuumCanvas = document.getElementById('vacuumCanvas');
+        const vCtx = vacuumCanvas.getContext('2d');
+
+        let hasAir = true;
+        let bellTime = 0;
+        let vacuumWaves = [];
+        let airParticles = [];
+
+        // ============================================
+        // VACUUM CHAMBER AUDIO
+        // ============================================
+        let vacuumAudioContext = null;
+        let bellOscillator = null;
+        let bellGainNode = null;
+        let bellPlaying = false;
+
+        function initVacuumAudio() {
+            if (!vacuumAudioContext) {
+                vacuumAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return vacuumAudioContext;
+        }
+
+        function startBellSound() {
+            if (bellPlaying) return;
+
+            const ctx = initVacuumAudio();
+
+            // Create bell-like sound using multiple oscillators
+            bellGainNode = ctx.createGain();
+            bellGainNode.gain.value = hasAir ? 0.15 : 0;
+            bellGainNode.connect(ctx.destination);
+
+            // Main bell tone
+            bellOscillator = ctx.createOscillator();
+            bellOscillator.type = 'sine';
+            bellOscillator.frequency.value = 800; // Bell frequency
+
+            // Add slight vibrato for realism
+            const vibrato = ctx.createOscillator();
+            const vibratoGain = ctx.createGain();
+            vibrato.frequency.value = 8; // Vibrato speed
+            vibratoGain.gain.value = 10; // Vibrato depth
+            vibrato.connect(vibratoGain);
+            vibratoGain.connect(bellOscillator.frequency);
+            vibrato.start();
+
+            // Second harmonic for richness
+            const bellOsc2 = ctx.createOscillator();
+            bellOsc2.type = 'sine';
+            bellOsc2.frequency.value = 1600; // Octave above
+            const gain2 = ctx.createGain();
+            gain2.gain.value = 0.3;
+            bellOsc2.connect(gain2);
+            gain2.connect(bellGainNode);
+            bellOsc2.start();
+
+            // Third harmonic
+            const bellOsc3 = ctx.createOscillator();
+            bellOsc3.type = 'sine';
+            bellOsc3.frequency.value = 2400;
+            const gain3 = ctx.createGain();
+            gain3.gain.value = 0.15;
+            bellOsc3.connect(gain3);
+            gain3.connect(bellGainNode);
+            bellOsc3.start();
+
+            bellOscillator.connect(bellGainNode);
+            bellOscillator.start();
+
+            bellPlaying = true;
+
+            // Store extra oscillators for cleanup
+            bellOscillator._extras = [vibrato, bellOsc2, bellOsc3];
+        }
+
+        function setBellVolume(volume, fadeTime = 0.5) {
+            if (!bellGainNode || !vacuumAudioContext) return;
+
+            bellGainNode.gain.cancelScheduledValues(vacuumAudioContext.currentTime);
+            bellGainNode.gain.setValueAtTime(bellGainNode.gain.value, vacuumAudioContext.currentTime);
+            bellGainNode.gain.linearRampToValueAtTime(volume, vacuumAudioContext.currentTime + fadeTime);
+        }
+
+        function stopBellSound() {
+            if (bellOscillator) {
+                bellOscillator.stop();
+                if (bellOscillator._extras) {
+                    bellOscillator._extras.forEach(osc => osc.stop());
+                }
+                bellOscillator = null;
+            }
+            bellPlaying = false;
+        }
+
+        // Initialize air particles
+        function initAirParticles() {
+            airParticles = [];
+            for (let i = 0; i < 80; i++) {
+                airParticles.push({
+                    x: 300 + Math.random() * 300,
+                    y: 80 + Math.random() * 240,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    size: 4 + Math.random() * 4
+                });
+            }
+        }
+
+        function drawVacuumChamber() {
+            vCtx.fillStyle = '#1a1a1a';
+            vCtx.fillRect(0, 0, vacuumCanvas.width, vacuumCanvas.height);
+
+            const jarCenterX = 450;
+            const jarCenterY = 200;
+            const jarWidth = 320;
+            const jarHeight = 260;
+
+            // Draw bell jar (glass dome)
+            vCtx.strokeStyle = 'rgba(200, 230, 255, 0.6)';
+            vCtx.lineWidth = 4;
+            vCtx.beginPath();
+            vCtx.ellipse(jarCenterX, jarCenterY - 20, jarWidth / 2, jarHeight / 2, 0, Math.PI, 0);
+            vCtx.stroke();
+
+            // Jar sides
+            vCtx.beginPath();
+            vCtx.moveTo(jarCenterX - jarWidth / 2, jarCenterY - 20);
+            vCtx.lineTo(jarCenterX - jarWidth / 2, jarCenterY + 100);
+            vCtx.moveTo(jarCenterX + jarWidth / 2, jarCenterY - 20);
+            vCtx.lineTo(jarCenterX + jarWidth / 2, jarCenterY + 100);
+            vCtx.stroke();
+
+            // Base
+            vCtx.fillStyle = '#444';
+            vCtx.fillRect(jarCenterX - jarWidth / 2 - 20, jarCenterY + 100, jarWidth + 40, 30);
+
+            // Draw air particles if present
+            if (hasAir) {
+                for (const p of airParticles) {
+                    // Bounce off walls
+                    const leftBound = jarCenterX - jarWidth / 2 + 20;
+                    const rightBound = jarCenterX + jarWidth / 2 - 20;
+                    const topBound = 60;
+                    const bottomBound = jarCenterY + 90;
+
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < leftBound || p.x > rightBound) p.vx *= -1;
+                    if (p.y < topBound || p.y > bottomBound) p.vy *= -1;
+
+                    p.x = Math.max(leftBound, Math.min(rightBound, p.x));
+                    p.y = Math.max(topBound, Math.min(bottomBound, p.y));
+
+                    vCtx.fillStyle = 'rgba(100, 200, 255, 0.6)';
+                    vCtx.beginPath();
+                    vCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    vCtx.fill();
+                }
+            }
+
+            // Draw bell
+            const bellX = jarCenterX;
+            const bellY = jarCenterY + 30;
+            const bellSwing = Math.sin(bellTime * 8) * 5;
+
+            // Bell support
+            vCtx.strokeStyle = '#888';
+            vCtx.lineWidth = 3;
+            vCtx.beginPath();
+            vCtx.moveTo(bellX, jarCenterY - 110);
+            vCtx.lineTo(bellX, bellY - 50);
+            vCtx.stroke();
+
+            // Bell body
+            vCtx.fillStyle = '#ffd700';
+            vCtx.beginPath();
+            vCtx.moveTo(bellX - 40, bellY + 20);
+            vCtx.quadraticCurveTo(bellX - 45, bellY - 30, bellX - 20, bellY - 50);
+            vCtx.lineTo(bellX + 20, bellY - 50);
+            vCtx.quadraticCurveTo(bellX + 45, bellY - 30, bellX + 40, bellY + 20);
+            vCtx.closePath();
+            vCtx.fill();
+
+            vCtx.strokeStyle = '#cc9900';
+            vCtx.lineWidth = 2;
+            vCtx.stroke();
+
+            // Bell clapper
+            vCtx.fillStyle = '#cc9900';
+            vCtx.beginPath();
+            vCtx.arc(bellX + bellSwing, bellY + 10, 8, 0, Math.PI * 2);
+            vCtx.fill();
+
+            // Draw sound waves if air is present
+            if (hasAir) {
+                // Generate waves
+                if (bellTime % 15 < 0.5) {
+                    vacuumWaves.push({ radius: 30, opacity: 1 });
+                }
+
+                // Draw and update waves
+                for (let i = vacuumWaves.length - 1; i >= 0; i--) {
+                    const wave = vacuumWaves[i];
+                    wave.radius += 2;
+                    wave.opacity -= 0.015;
+
+                    if (wave.opacity <= 0 || wave.radius > 150) {
+                        vacuumWaves.splice(i, 1);
+                        continue;
+                    }
+
+                    vCtx.strokeStyle = `rgba(255, 152, 0, ${wave.opacity})`;
+                    vCtx.lineWidth = 3;
+                    vCtx.beginPath();
+                    vCtx.arc(bellX, bellY, wave.radius, 0, Math.PI * 2);
+                    vCtx.stroke();
+                }
+
+                // Vibration lines on bell
+                vCtx.strokeStyle = 'rgba(255, 152, 0, 0.5)';
+                vCtx.lineWidth = 2;
+                for (let i = 0; i < 3; i++) {
+                    const offset = 50 + i * 8;
+                    vCtx.beginPath();
+                    vCtx.arc(bellX, bellY - 15, offset, Math.PI * 0.7, Math.PI * 1.3);
+                    vCtx.stroke();
+                }
+            } else {
+                vacuumWaves = [];
+            }
+
+            // Labels
+            vCtx.fillStyle = '#fff';
+            vCtx.font = 'bold 18px Arial';
+            vCtx.fillText('Bell Jar Experiment', 50, 40);
+
+            // Status text
+            if (hasAir) {
+                vCtx.fillStyle = '#4caf50';
+                vCtx.font = 'bold 24px Arial';
+                vCtx.fillText('SOUND HEARD', 680, 180);
+                vCtx.font = '16px Arial';
+                vCtx.fillText('Air particles carry', 680, 210);
+                vCtx.fillText('the vibrations', 680, 235);
+            } else {
+                vCtx.fillStyle = '#f44336';
+                vCtx.font = 'bold 24px Arial';
+                vCtx.fillText('NO SOUND!', 700, 180);
+                vCtx.font = '16px Arial';
+                vCtx.fillText('No particles to', 700, 210);
+                vCtx.fillText('carry vibrations', 700, 235);
+            }
+
+            // Vacuum pump indicator
+            vCtx.fillStyle = '#666';
+            vCtx.fillRect(50, 280, 150, 80);
+            vCtx.fillStyle = hasAir ? '#4caf50' : '#f44336';
+            vCtx.fillRect(60, 290, 130, 25);
+            vCtx.fillStyle = '#fff';
+            vCtx.font = 'bold 14px Arial';
+            vCtx.fillText(hasAir ? 'AIR PRESENT' : 'VACUUM', 80, 308);
+
+            // Tube from pump to jar
+            vCtx.strokeStyle = '#666';
+            vCtx.lineWidth = 8;
+            vCtx.beginPath();
+            vCtx.moveTo(200, 320);
+            vCtx.lineTo(jarCenterX - jarWidth / 2, 320);
+            vCtx.lineTo(jarCenterX - jarWidth / 2, jarCenterY + 100);
+            vCtx.stroke();
+        }
+
+        function animateVacuum() {
+            bellTime += 0.3;
+            drawVacuumChamber();
+            requestAnimationFrame(animateVacuum);
+        }
+
+        // Start Experiment button
+        document.getElementById('startBellExperiment').addEventListener('click', () => {
+            if (!bellPlaying) {
+                startBellSound();
+                document.getElementById('vacuumStatus').textContent = hasAir ?
+                    'Sound can travel - Bell is ringing!' :
+                    'Sound CANNOT travel - No air!';
+            }
+        });
+
+        // Stop Experiment button
+        document.getElementById('stopBellExperiment').addEventListener('click', () => {
+            stopBellSound();
+            document.getElementById('vacuumStatus').textContent = 'Experiment stopped - Click "Start Experiment" to begin';
+        });
+
+        const vacuumToggle = document.getElementById('vacuumToggle');
+        vacuumToggle.addEventListener('click', () => {
+            hasAir = !hasAir;
+            vacuumToggle.classList.toggle('active');
+            document.getElementById('vacuumLabel').textContent = hasAir ? 'Air Present' : 'Vacuum (No Air)';
+
+            const status = document.getElementById('vacuumStatus');
+            if (hasAir) {
+                status.textContent = bellPlaying ? 'Sound can travel - Bell is ringing!' : 'Sound can travel - Start the experiment to hear the bell!';
+                status.className = 'status-indicator status-air';
+                initAirParticles();
+                // Fade bell sound back in (if experiment is running)
+                if (bellPlaying) {
+                    setBellVolume(0.15, 0.8);
+                }
+            } else {
+                status.textContent = bellPlaying ? 'Sound CANNOT travel - Bell is ringing but you cannot hear it!' : 'Sound CANNOT travel';
+                status.className = 'status-indicator status-vacuum';
+                airParticles = [];
+                // Fade bell sound out (simulating air being removed)
+                if (bellPlaying) {
+                    setBellVolume(0, 1.5);
+                }
+            }
+        });
+
+        // ============================================
+        // MEDIUM SELECTOR
+        // ============================================
+        const mediumCanvas = document.getElementById('mediumCanvas');
+        const mCtx = mediumCanvas.getContext('2d');
+
+        let currentMedium = 'gas';
+        let mediumTime = 0;
+
+        const mediumData = {
+            gas: {
+                spacing: 50,
+                rows: 4,
+                cols: 15,
+                speed: 1,
+                color: '#00bcd4',
+                label: 'Gas: Particles are far apart - sound travels slower (346 m/s in air)'
+            },
+            liquid: {
+                spacing: 30,
+                rows: 6,
+                cols: 25,
+                speed: 4,
+                color: '#2196f3',
+                label: 'Liquid: Particles are closer - sound travels faster (1500 m/s in water)'
+            },
+            solid: {
+                spacing: 22,
+                rows: 8,
+                cols: 35,
+                speed: 15,
+                color: '#ff9800',
+                label: 'Solid: Particles are tightly packed - sound travels fastest (5000+ m/s in steel)'
+            }
+        };
+
+        function drawMedium() {
+            mCtx.fillStyle = '#1a1a1a';
+            mCtx.fillRect(0, 0, mediumCanvas.width, mediumCanvas.height);
+
+            const data = mediumData[currentMedium];
+
+            // Draw source
+            mCtx.fillStyle = '#f44336';
+            mCtx.beginPath();
+            mCtx.arc(50, mediumCanvas.height / 2, 20, 0, Math.PI * 2);
+            mCtx.fill();
+            mCtx.fillStyle = '#fff';
+            mCtx.font = 'bold 12px Arial';
+            mCtx.fillText('SRC', 38, mediumCanvas.height / 2 + 4);
+
+            // Calculate starting position to center the grid
+            const gridWidth = (data.cols - 1) * data.spacing;
+            const gridHeight = (data.rows - 1) * data.spacing;
+            const startX = 100;
+            const startY = (mediumCanvas.height - gridHeight) / 2;
+
+            // Draw particles
+            for (let row = 0; row < data.rows; row++) {
+                for (let col = 0; col < data.cols; col++) {
+                    const baseX = startX + col * data.spacing;
+                    const baseY = startY + row * data.spacing;
+
+                    // Wave propagation from left
+                    const distance = col * data.spacing;
+                    const phase = mediumTime * data.speed * 0.05 - distance * 0.02;
+                    const displacement = Math.sin(phase) * (data.spacing * 0.3);
+
+                    const x = baseX + displacement;
+
+                    // Color based on compression
+                    const compression = Math.sin(phase);
+                    let alpha = 0.8;
+                    let size = 6;
+
+                    if (currentMedium === 'solid') size = 8;
+                    if (currentMedium === 'liquid') size = 7;
+
+                    if (compression > 0.3) {
+                        alpha = 1;
+                        size += 2;
+                    } else if (compression < -0.3) {
+                        alpha = 0.5;
+                        size -= 1;
+                    }
+
+                    mCtx.fillStyle = data.color;
+                    mCtx.globalAlpha = alpha;
+                    mCtx.beginPath();
+                    mCtx.arc(x, baseY, size, 0, Math.PI * 2);
+                    mCtx.fill();
+                }
+            }
+
+            mCtx.globalAlpha = 1;
+
+            // Draw bonds for solid
+            if (currentMedium === 'solid') {
+                mCtx.strokeStyle = 'rgba(255, 152, 0, 0.3)';
+                mCtx.lineWidth = 1;
+                for (let row = 0; row < data.rows; row++) {
+                    for (let col = 0; col < data.cols - 1; col++) {
+                        const x1 = startX + col * data.spacing;
+                        const x2 = startX + (col + 1) * data.spacing;
+                        const y = startY + row * data.spacing;
+
+                        const phase1 = mediumTime * data.speed * 0.05 - col * data.spacing * 0.02;
+                        const phase2 = mediumTime * data.speed * 0.05 - (col + 1) * data.spacing * 0.02;
+
+                        const d1 = Math.sin(phase1) * (data.spacing * 0.3);
+                        const d2 = Math.sin(phase2) * (data.spacing * 0.3);
+
+                        mCtx.beginPath();
+                        mCtx.moveTo(x1 + d1, y);
+                        mCtx.lineTo(x2 + d2, y);
+                        mCtx.stroke();
+                    }
+                }
+            }
+
+            // Speed indicator
+            mCtx.fillStyle = '#fff';
+            mCtx.font = 'bold 16px Arial';
+            const speedText = currentMedium === 'gas' ? 'SLOW' : currentMedium === 'liquid' ? 'MEDIUM' : 'FAST';
+            mCtx.fillText(`Wave Speed: ${speedText}`, mediumCanvas.width - 200, 30);
+
+            // Direction arrow
+            mCtx.fillStyle = data.color;
+            mCtx.fillText('Wave →', mediumCanvas.width - 100, mediumCanvas.height - 20);
+        }
+
+        function animateMedium() {
+            mediumTime += 1;
+            drawMedium();
+            requestAnimationFrame(animateMedium);
+        }
+
+        // Medium button handlers
+        document.querySelectorAll('.medium-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.medium-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentMedium = btn.dataset.medium;
+                document.getElementById('mediumLabel').textContent = mediumData[currentMedium].label;
+            });
+        });
+
+        // ============================================
+        // Initialize all animations
+        // ============================================
+        initAirParticles();
+        updateTuningFork();
+        animateSpeaker();
+        animateVacuum();
+        animateMedium();
+    </script>
+</body>
+</html>

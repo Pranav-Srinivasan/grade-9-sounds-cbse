@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflection of Sound & Echo - Interactive Revision</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .nav a {
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .nav a:hover, .nav a.active {
+            color: #00bcd4;
+        }
+
+        .nav-title {
+            color: #00bcd4;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-right: auto;
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 80px;
+        }
+
+        section {
+            min-height: 100vh;
+            padding: 3rem;
+            border-bottom: 4px solid #ddd;
+            background: #fff;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            color: #0077aa;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin: 2.5rem 0 1rem;
+            color: #005577;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 1.5rem 0 0.75rem;
+            color: #0077aa;
+        }
+
+        .section-number {
+            font-size: 1rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #333;
+            max-width: 900px;
+            margin-bottom: 1rem;
+        }
+
+        .highlight {
+            color: #d32f2f;
+            font-weight: 700;
+            background: #ffebee;
+            padding: 0.1em 0.3em;
+            border-radius: 4px;
+        }
+
+        /* Canvas Container */
+        .canvas-container {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 3px solid #333;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .canvas-container canvas {
+            display: block;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .canvas-label {
+            font-size: 1rem;
+            color: #aaa;
+            margin-top: 0.75rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-size: 1rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 220px;
+            height: 10px;
+            -webkit-appearance: none;
+            background: #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #0077aa;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .value-display {
+            font-size: 1.3rem;
+            color: #0077aa;
+            font-weight: 700;
+            min-width: 100px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: #0077aa;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,119,170,0.4);
+        }
+
+        .btn-primary:hover {
+            background: #005580;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #0077aa;
+            border: 3px solid #0077aa;
+        }
+
+        .btn-secondary:hover {
+            background: #e3f2fd;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+            box-shadow: 0 4px 12px rgba(76,175,80,0.4);
+        }
+
+        .btn-success:hover {
+            background: #388e3c;
+        }
+
+        /* Key Points Box */
+        .key-point {
+            background: #e3f2fd;
+            border-left: 6px solid #0077aa;
+            padding: 1.5rem 2rem;
+            margin: 1.5rem 0;
+            border-radius: 0 12px 12px 0;
+            font-size: 1.2rem;
+        }
+
+        .key-point strong {
+            color: #0077aa;
+        }
+
+        /* Formula Box */
+        .formula-box {
+            background: #e8f5e9;
+            border: 3px solid #4caf50;
+            border-radius: 12px;
+            padding: 1.5rem 2.5rem;
+            margin: 1.5rem 0;
+            display: inline-block;
+        }
+
+        .formula {
+            font-size: 2rem;
+            font-family: 'Times New Roman', serif;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        /* Status Display */
+        .status-display {
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .status-echo {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 3px solid #4caf50;
+        }
+
+        .status-no-echo {
+            background: #ffebee;
+            color: #c62828;
+            border: 3px solid #f44336;
+        }
+
+        /* Drag instruction */
+        .drag-instruction {
+            background: #e8f5e9;
+            border: 2px dashed #4caf50;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            margin: 1rem 0;
+            font-size: 1.1rem;
+            color: #2e7d32;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* Checkboxes */
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            background: #f5f5f5;
+            border-top: 3px solid #ddd;
+        }
+
+        .nav-buttons a {
+            text-decoration: none;
+        }
+
+        /* Info Cards */
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .info-card {
+            background: #fff;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .info-card h4 {
+            color: #0077aa;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .info-card .unit {
+            color: #888;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <span class="nav-title">Sound & Waves</span>
+        <a href="index.html">1-3. Waves</a>
+        <a href="section4-sound-production.html">4. Sound Production</a>
+        <a href="section5-speed-of-sound.html">5. Speed of Sound</a>
+        <a href="section6-echo.html" class="active">6. Echo</a>
+    </nav>
+
+    <main>
+        <!-- Section 6: Reflection & Echo -->
+        <section id="section6">
+            <div class="section-number">Section 6</div>
+            <h1>Reflection of Sound & Echo</h1>
+            <p>
+                Sound waves <span class="highlight">reflect</span> when they hit a hard surface, just like light reflects from a mirror.
+                When this reflected sound reaches our ears after the original sound, we hear an <span class="highlight">echo</span>.
+            </p>
+
+            <div class="key-point">
+                <strong>What is an Echo?</strong><br>
+                An echo is the <strong>repetition of sound</strong> caused by reflection of sound waves from a hard surface.
+                We can only hear a distinct echo if there's at least a <strong>0.1 second gap</strong> between the original sound and its reflection.
+            </div>
+
+            <!-- Key Facts -->
+            <h2>Key Facts About Echo</h2>
+
+            <div class="info-cards">
+                <div class="info-card">
+                    <h4>Persistence of Hearing</h4>
+                    <div class="value">0.1 <span class="unit">seconds</span></div>
+                    <p style="font-size: 1rem; margin-top: 0.5rem;">Our brain retains a sound for 0.1s. We need this gap to hear a separate echo.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Minimum Distance for Echo</h4>
+                    <div class="value">17.2 <span class="unit">meters</span></div>
+                    <p style="font-size: 1rem; margin-top: 0.5rem;">At 344 m/s (sound speed at 22°C), this is the minimum distance to a wall.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Speed of Sound in Air</h4>
+                    <div class="value">344 <span class="unit">m/s</span></div>
+                    <p style="font-size: 1rem; margin-top: 0.5rem;">At room temperature (22°C). Sound must travel to wall AND back.</p>
+                </div>
+            </div>
+
+            <div class="formula-box">
+                <div class="formula">d = (v × t) / 2</div>
+            </div>
+            <p><strong>Distance to wall = (Speed × Time for echo) / 2</strong></p>
+            <p style="font-size: 1.1rem; color: #666;">
+                We divide by 2 because sound travels TO the wall and BACK.
+                For 0.1s delay: d = (344 × 0.1) / 2 = 17.2 m
+            </p>
+
+            <!-- Echo Simulator -->
+            <h2>Echo Simulator - Try It!</h2>
+            <p>Drag the person to different distances from the cliff. Will you hear an echo?</p>
+
+            <div class="drag-instruction">
+                Drag the person left/right to change the distance from the cliff
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="echoCanvas" width="900" height="400"></canvas>
+                <div class="canvas-label">The person needs to be at least 17.2m away from the cliff to hear a distinct echo</div>
+            </div>
+
+            <div id="echoStatus" class="status-display status-echo">
+                Distance: 25m | Time for echo: 0.145s | ECHO HEARD!
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="makeSound">Make Sound!</button>
+                <button class="btn btn-secondary" id="resetEcho">Reset</button>
+            </div>
+
+            <!-- Clap and Listen -->
+            <h2>Clap and Listen</h2>
+            <p>Click to clap and watch the sound wave travel to the wall and back. The timer shows if the echo is heard.</p>
+
+            <div class="canvas-container">
+                <canvas id="clapCanvas" width="900" height="300"></canvas>
+                <div class="canvas-label">Watch the sound wave travel to the wall, reflect, and return</div>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Wall Distance (m)</label>
+                    <input type="range" id="wallDistance" min="5" max="50" value="25">
+                    <span class="value-display" id="wallDistValue">25 m</span>
+                </div>
+                <button class="btn btn-success" id="clapBtn">CLAP!</button>
+            </div>
+
+            <div id="clapResult" style="font-size: 1.3rem; margin: 1rem 0; font-weight: 600;"></div>
+
+            <!-- Reverberation -->
+            <h2>Reverberation</h2>
+            <p>
+                <span class="highlight">Reverberation</span> is the persistence of sound in a room due to
+                <strong>multiple reflections</strong> from walls, ceiling, and floor.
+                Too much reverberation makes speech unclear. Acoustic treatments can reduce it.
+            </p>
+
+            <div class="canvas-container">
+                <canvas id="reverbCanvas" width="900" height="350"></canvas>
+                <div class="canvas-label">Toggle acoustic treatments to see how they reduce reverberation</div>
+            </div>
+
+            <div class="checkbox-group">
+                <label class="checkbox-item">
+                    <input type="checkbox" id="curtains">
+                    <span>Add Curtains (absorb sound)</span>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="carpet">
+                    <span>Carpeted Floor (reduces reflection)</span>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="panels">
+                    <span>Acoustic Panels on Walls</span>
+                </label>
+            </div>
+
+            <div id="reverbLevel" style="font-size: 1.3rem; margin: 1rem 0; font-weight: 600;">
+                Reverberation Level: <span style="color: #d32f2f;">HIGH</span> - Speech is unclear!
+            </div>
+
+            <!-- Rolling Thunder -->
+            <h2>Why Does Thunder Roll?</h2>
+            <p>
+                Thunder from a single lightning strike sounds like it's "rolling" because the sound reflects
+                from multiple surfaces - clouds, mountains, buildings - at different distances, creating
+                a series of echoes that blend together.
+            </p>
+
+            <div class="canvas-container">
+                <canvas id="thunderCanvas" width="900" height="350"></canvas>
+                <div class="canvas-label">Click to trigger lightning and see how multiple reflections create rolling thunder</div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="triggerLightning">Trigger Lightning</button>
+            </div>
+
+            <div class="key-point">
+                <strong>Applications of Sound Reflection:</strong><br><br>
+                1. <strong>Megaphone/Speaking Tube</strong> - Focuses sound in one direction<br>
+                2. <strong>Stethoscope</strong> - Reflects heartbeat sounds to doctor's ears<br>
+                3. <strong>Soundboard in Musical Instruments</strong> - Reflects and amplifies sound<br>
+                4. <strong>Concert Halls</strong> - Designed for optimal sound reflection<br>
+                5. <strong>Whispering Galleries</strong> - Curved walls focus whispered sounds
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <a href="section5-speed-of-sound.html"><button class="btn btn-secondary">← Previous: Speed of Sound</button></a>
+        <a href="index.html"><button class="btn btn-primary">Back to Start →</button></a>
+    </div>
+
+    <script>
+        // ============================================
+        // ECHO SIMULATOR
+        // ============================================
+        const echoCanvas = document.getElementById('echoCanvas');
+        const eCtx = echoCanvas.getContext('2d');
+
+        const SPEED_OF_SOUND = 344; // m/s
+        const MIN_ECHO_TIME = 0.1; // seconds
+        const MIN_ECHO_DISTANCE = (SPEED_OF_SOUND * MIN_ECHO_TIME) / 2;
+
+        let personX = 300;
+        let isDraggingPerson = false;
+        let soundWaveRadius = 0;
+        let soundActive = false;
+        let echoWaveRadius = 0;
+        let echoActive = false;
+        let animationStartTime = 0;
+        let soundReachedCliff = false;
+
+        const CLIFF_X = 800;
+        const PERSON_MIN_X = 100;
+        const PIXELS_PER_METER = 20;
+        const VISUAL_SPEED = SPEED_OF_SOUND * PIXELS_PER_METER; // pixels per second (matches real sound speed)
+
+        // ============================================
+        // AUDIO SYSTEM
+        // ============================================
+        let audioContext = null;
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
+
+        // Create a "shout" sound (like "Hello!")
+        function playShoutSound(volume = 0.4) {
+            const ctx = initAudio();
+            const duration = 0.35; // Longer duration for clearer distinction
+
+            // Create oscillator for the base tone
+            const osc = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(350, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + duration);
+
+            gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+            gainNode.gain.setValueAtTime(volume, ctx.currentTime + duration * 0.6);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+            osc.connect(gainNode);
+            gainNode.connect(ctx.destination);
+
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + duration);
+
+            // Add a second harmonic for richness
+            const osc2 = ctx.createOscillator();
+            const gain2 = ctx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(700, ctx.currentTime);
+            osc2.frequency.exponentialRampToValueAtTime(350, ctx.currentTime + duration);
+            gain2.gain.setValueAtTime(volume * 0.3, ctx.currentTime);
+            gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+            osc2.connect(gain2);
+            gain2.connect(ctx.destination);
+            osc2.start(ctx.currentTime);
+            osc2.stop(ctx.currentTime + duration);
+        }
+
+        // Play echo (same sound but quieter, simulating distance attenuation)
+        function playEchoSound(delay, volume = 0.25) {
+            setTimeout(() => {
+                playShoutSound(volume);
+            }, delay * 1000); // Convert seconds to milliseconds
+        }
+
+        // Play both original and echo with calculated delay
+        function playEchoDemo() {
+            const distance = getDistanceToCliff();
+            const echoTime = (2 * distance) / SPEED_OF_SOUND;
+
+            // Play original sound immediately
+            playShoutSound(0.4);
+
+            // Play echo after the calculated delay
+            playEchoSound(echoTime, 0.2);
+
+            // Show feedback to user
+            const canHearEcho = distance >= MIN_ECHO_DISTANCE;
+            setTimeout(() => {
+                showEchoChallenge(canHearEcho, echoTime);
+            }, (echoTime + 0.3) * 1000);
+        }
+
+        function showEchoChallenge(canHearEcho, echoTime) {
+            const statusDiv = document.getElementById('echoStatus');
+            if (canHearEcho) {
+                statusDiv.innerHTML = `<strong>Did you hear TWO sounds?</strong> The echo came after ${(echoTime * 1000).toFixed(0)}ms (${echoTime.toFixed(3)}s) - that's longer than 100ms, so you should hear a distinct echo!`;
+            } else {
+                statusDiv.innerHTML = `<strong>Did the sounds blend together?</strong> The echo came after only ${(echoTime * 1000).toFixed(0)}ms (${echoTime.toFixed(3)}s) - that's less than 100ms, so the sounds overlap!`;
+            }
+        }
+
+        function getDistanceToCliff() {
+            return (CLIFF_X - personX) / PIXELS_PER_METER;
+        }
+
+        function drawEchoSimulator() {
+            // Sky gradient
+            const gradient = eCtx.createLinearGradient(0, 0, 0, echoCanvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(0.6, '#b3e5fc');
+            gradient.addColorStop(1, '#8BC34A');
+            eCtx.fillStyle = gradient;
+            eCtx.fillRect(0, 0, echoCanvas.width, echoCanvas.height);
+
+            // Ground
+            eCtx.fillStyle = '#5d4037';
+            eCtx.fillRect(0, echoCanvas.height - 50, echoCanvas.width, 50);
+
+            // Cliff
+            eCtx.fillStyle = '#795548';
+            eCtx.fillRect(CLIFF_X, 50, 100, echoCanvas.height - 100);
+
+            // Cliff texture
+            eCtx.strokeStyle = '#5d4037';
+            eCtx.lineWidth = 2;
+            for (let y = 70; y < echoCanvas.height - 60; y += 30) {
+                eCtx.beginPath();
+                eCtx.moveTo(CLIFF_X, y);
+                eCtx.lineTo(CLIFF_X + 100, y + 15);
+                eCtx.stroke();
+            }
+
+            // Cliff label
+            eCtx.fillStyle = '#fff';
+            eCtx.font = 'bold 18px Arial';
+            eCtx.fillText('CLIFF', CLIFF_X + 20, 80);
+
+            // Draw person
+            const personY = echoCanvas.height - 100;
+
+            // Head
+            eCtx.fillStyle = '#ffcc80';
+            eCtx.beginPath();
+            eCtx.arc(personX, personY - 40, 25, 0, Math.PI * 2);
+            eCtx.fill();
+
+            // Body
+            eCtx.fillStyle = '#2196f3';
+            eCtx.fillRect(personX - 15, personY - 15, 30, 50);
+
+            // Legs
+            eCtx.fillStyle = '#1565c0';
+            eCtx.fillRect(personX - 12, personY + 35, 10, 30);
+            eCtx.fillRect(personX + 2, personY + 35, 10, 30);
+
+            // Mouth (shouting)
+            if (soundActive) {
+                eCtx.fillStyle = '#333';
+                eCtx.beginPath();
+                eCtx.ellipse(personX + 20, personY - 40, 10, 8, 0, 0, Math.PI * 2);
+                eCtx.fill();
+            }
+
+            // Sound wave going out
+            if (soundActive && soundWaveRadius > 0) {
+                const waveX = personX + soundWaveRadius;
+                if (waveX < CLIFF_X) {
+                    eCtx.strokeStyle = '#ff9800';
+                    eCtx.lineWidth = 4;
+                    eCtx.beginPath();
+                    eCtx.arc(personX, personY - 30, soundWaveRadius, -0.5, 0.5);
+                    eCtx.stroke();
+
+                    // Label
+                    eCtx.fillStyle = '#ff9800';
+                    eCtx.font = 'bold 14px Arial';
+                    eCtx.fillText('Sound →', personX + soundWaveRadius - 40, personY - 60);
+                }
+            }
+
+            // Echo wave coming back
+            if (echoActive && echoWaveRadius > 0) {
+                const waveX = CLIFF_X - echoWaveRadius;
+                if (waveX > personX) {
+                    eCtx.strokeStyle = '#4caf50';
+                    eCtx.lineWidth = 4;
+                    eCtx.beginPath();
+                    eCtx.arc(CLIFF_X, personY - 30, echoWaveRadius, Math.PI - 0.5, Math.PI + 0.5);
+                    eCtx.stroke();
+
+                    // Label
+                    eCtx.fillStyle = '#4caf50';
+                    eCtx.font = 'bold 14px Arial';
+                    eCtx.fillText('← Echo', CLIFF_X - echoWaveRadius - 10, personY - 60);
+                }
+            }
+
+            // Distance marker
+            const distance = getDistanceToCliff();
+            eCtx.strokeStyle = '#333';
+            eCtx.lineWidth = 2;
+            eCtx.setLineDash([5, 5]);
+            eCtx.beginPath();
+            eCtx.moveTo(personX, echoCanvas.height - 30);
+            eCtx.lineTo(CLIFF_X, echoCanvas.height - 30);
+            eCtx.stroke();
+            eCtx.setLineDash([]);
+
+            // Distance label
+            eCtx.fillStyle = '#333';
+            eCtx.font = 'bold 16px Arial';
+            const midX = (personX + CLIFF_X) / 2;
+            eCtx.fillText(`${distance.toFixed(1)} m`, midX - 20, echoCanvas.height - 10);
+
+            // Min distance line
+            const minDistX = CLIFF_X - MIN_ECHO_DISTANCE * PIXELS_PER_METER;
+            eCtx.strokeStyle = '#f44336';
+            eCtx.lineWidth = 2;
+            eCtx.setLineDash([10, 5]);
+            eCtx.beginPath();
+            eCtx.moveTo(minDistX, 100);
+            eCtx.lineTo(minDistX, echoCanvas.height - 60);
+            eCtx.stroke();
+            eCtx.setLineDash([]);
+
+            eCtx.fillStyle = '#f44336';
+            eCtx.font = '12px Arial';
+            eCtx.fillText('Min 17.2m', minDistX - 25, 90);
+
+            // Drag hint
+            if (!soundActive) {
+                eCtx.fillStyle = '#666';
+                eCtx.font = 'bold 14px Arial';
+                eCtx.fillText('← Drag me! →', personX - 45, personY - 80);
+            }
+        }
+
+        function updateEchoStatus() {
+            const distance = getDistanceToCliff();
+            const echoTime = (2 * distance) / SPEED_OF_SOUND;
+            const canHearEcho = distance >= MIN_ECHO_DISTANCE;
+
+            const statusDiv = document.getElementById('echoStatus');
+            if (canHearEcho) {
+                statusDiv.className = 'status-display status-echo';
+                statusDiv.textContent = `Distance: ${distance.toFixed(1)}m | Time for echo: ${echoTime.toFixed(3)}s | ECHO HEARD!`;
+            } else {
+                statusDiv.className = 'status-display status-no-echo';
+                statusDiv.textContent = `Distance: ${distance.toFixed(1)}m | Time: ${echoTime.toFixed(3)}s | NO ECHO (too close!)`;
+            }
+        }
+
+        function animateSound() {
+            const currentTime = performance.now();
+            const elapsedTime = (currentTime - animationStartTime) / 1000; // seconds
+
+            if (soundActive) {
+                // Calculate wave position based on real time and sound speed
+                soundWaveRadius = elapsedTime * VISUAL_SPEED;
+
+                const distanceToCliff = CLIFF_X - personX;
+
+                // Check if sound has reached the cliff
+                if (soundWaveRadius >= distanceToCliff && !soundReachedCliff) {
+                    soundReachedCliff = true;
+                    echoActive = true;
+                    echoWaveRadius = 0;
+                }
+
+                // Stop outgoing wave when it goes off screen
+                if (soundWaveRadius > distanceToCliff + 150) {
+                    soundActive = false;
+                }
+            }
+
+            if (echoActive) {
+                // Echo starts when sound reaches cliff
+                const distanceToCliff = CLIFF_X - personX;
+                const timeToCliff = distanceToCliff / VISUAL_SPEED;
+                const echoElapsed = elapsedTime - timeToCliff;
+
+                if (echoElapsed > 0) {
+                    echoWaveRadius = echoElapsed * VISUAL_SPEED;
+
+                    if (echoWaveRadius >= distanceToCliff + 100) {
+                        echoActive = false;
+                        echoWaveRadius = 0;
+                    }
+                }
+            }
+
+            drawEchoSimulator();
+            requestAnimationFrame(animateSound);
+        }
+
+        echoCanvas.addEventListener('mousedown', (e) => {
+            const rect = echoCanvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            const personY = echoCanvas.height - 100;
+
+            if (Math.abs(mouseX - personX) < 40 && Math.abs(mouseY - personY + 20) < 80) {
+                isDraggingPerson = true;
+            }
+        });
+
+        echoCanvas.addEventListener('mousemove', (e) => {
+            if (!isDraggingPerson) return;
+
+            const rect = echoCanvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+
+            personX = Math.max(PERSON_MIN_X, Math.min(CLIFF_X - 50, mouseX));
+            updateEchoStatus();
+        });
+
+        echoCanvas.addEventListener('mouseup', () => {
+            isDraggingPerson = false;
+        });
+
+        echoCanvas.addEventListener('mouseleave', () => {
+            isDraggingPerson = false;
+        });
+
+        document.getElementById('makeSound').addEventListener('click', () => {
+            soundActive = true;
+            soundWaveRadius = 0;
+            echoActive = false;
+            echoWaveRadius = 0;
+            soundReachedCliff = false;
+            animationStartTime = performance.now();
+
+            // Play audio with echo
+            playEchoDemo();
+        });
+
+        document.getElementById('resetEcho').addEventListener('click', () => {
+            personX = 300;
+            soundActive = false;
+            echoActive = false;
+            soundWaveRadius = 0;
+            echoWaveRadius = 0;
+            soundReachedCliff = false;
+            updateEchoStatus();
+        });
+
+        // ============================================
+        // CLAP AND LISTEN
+        // ============================================
+        const clapCanvas = document.getElementById('clapCanvas');
+        const cCtx = clapCanvas.getContext('2d');
+
+        let wallDist = 25; // meters
+        let clapWavePos = 0;
+        let clapActive = false;
+        let clapReturning = false;
+        let clapStartTime = 0;
+        let clapTotalTime = 0;
+
+        const CLAP_PIXELS_PER_METER = 15;
+
+        function drawClapScene() {
+            cCtx.fillStyle = '#1a1a1a';
+            cCtx.fillRect(0, 0, clapCanvas.width, clapCanvas.height);
+
+            const personX = 100;
+            const wallX = personX + wallDist * CLAP_PIXELS_PER_METER;
+            const centerY = clapCanvas.height / 2;
+
+            // Floor
+            cCtx.fillStyle = '#333';
+            cCtx.fillRect(0, clapCanvas.height - 30, clapCanvas.width, 30);
+
+            // Wall
+            cCtx.fillStyle = '#666';
+            cCtx.fillRect(wallX, 30, 30, clapCanvas.height - 60);
+
+            // Wall texture
+            for (let y = 40; y < clapCanvas.height - 40; y += 40) {
+                cCtx.strokeStyle = '#555';
+                cCtx.lineWidth = 1;
+                cCtx.beginPath();
+                cCtx.moveTo(wallX, y);
+                cCtx.lineTo(wallX + 30, y);
+                cCtx.stroke();
+            }
+
+            // Person
+            cCtx.fillStyle = '#ffcc80';
+            cCtx.beginPath();
+            cCtx.arc(personX, centerY - 30, 20, 0, Math.PI * 2);
+            cCtx.fill();
+
+            cCtx.fillStyle = '#4caf50';
+            cCtx.fillRect(personX - 12, centerY - 10, 24, 40);
+
+            // Hands (clapping)
+            if (clapActive && !clapReturning && clapWavePos < 50) {
+                cCtx.fillStyle = '#ffcc80';
+                cCtx.beginPath();
+                cCtx.arc(personX + 30, centerY - 20, 10, 0, Math.PI * 2);
+                cCtx.fill();
+                cCtx.beginPath();
+                cCtx.arc(personX + 30, centerY, 10, 0, Math.PI * 2);
+                cCtx.fill();
+            }
+
+            // Sound wave
+            if (clapActive) {
+                const waveX = clapReturning ?
+                    wallX - clapWavePos :
+                    personX + clapWavePos;
+
+                const waveColor = clapReturning ? '#4caf50' : '#ff9800';
+                cCtx.strokeStyle = waveColor;
+                cCtx.lineWidth = 4;
+
+                if (clapReturning) {
+                    cCtx.beginPath();
+                    cCtx.arc(wallX, centerY, clapWavePos, Math.PI / 2, Math.PI * 1.5);
+                    cCtx.stroke();
+                } else {
+                    cCtx.beginPath();
+                    cCtx.arc(personX, centerY, clapWavePos, -Math.PI / 2, Math.PI / 2);
+                    cCtx.stroke();
+                }
+
+                // Wave label
+                cCtx.fillStyle = waveColor;
+                cCtx.font = 'bold 14px Arial';
+                cCtx.fillText(clapReturning ? '← Echo' : 'Sound →', waveX - 20, 50);
+            }
+
+            // Distance marker
+            cCtx.strokeStyle = '#888';
+            cCtx.lineWidth = 1;
+            cCtx.setLineDash([5, 5]);
+            cCtx.beginPath();
+            cCtx.moveTo(personX, clapCanvas.height - 50);
+            cCtx.lineTo(wallX, clapCanvas.height - 50);
+            cCtx.stroke();
+            cCtx.setLineDash([]);
+
+            cCtx.fillStyle = '#888';
+            cCtx.font = 'bold 14px Arial';
+            cCtx.fillText(`${wallDist} m`, (personX + wallX) / 2 - 15, clapCanvas.height - 55);
+
+            // Time display
+            if (clapActive || clapTotalTime > 0) {
+                const elapsed = clapActive ?
+                    (Date.now() - clapStartTime) / 1000 :
+                    clapTotalTime;
+
+                cCtx.fillStyle = '#fff';
+                cCtx.font = 'bold 24px Arial';
+                cCtx.fillText(`Time: ${elapsed.toFixed(3)}s`, 650, 50);
+            }
+        }
+
+        function animateClap() {
+            if (clapActive) {
+                const distToWall = wallDist * CLAP_PIXELS_PER_METER;
+
+                if (!clapReturning) {
+                    clapWavePos += 10;
+                    if (clapWavePos >= distToWall) {
+                        clapReturning = true;
+                        clapWavePos = 0;
+                    }
+                } else {
+                    clapWavePos += 10;
+                    if (clapWavePos >= distToWall) {
+                        clapActive = false;
+                        clapTotalTime = (Date.now() - clapStartTime) / 1000;
+
+                        // Show result
+                        const resultDiv = document.getElementById('clapResult');
+                        const echoTime = (2 * wallDist) / SPEED_OF_SOUND;
+                        if (echoTime >= MIN_ECHO_TIME) {
+                            resultDiv.innerHTML = `<span style="color: #4caf50;">Echo heard after ${echoTime.toFixed(3)}s (> 0.1s)</span>`;
+                        } else {
+                            resultDiv.innerHTML = `<span style="color: #f44336;">No distinct echo - ${echoTime.toFixed(3)}s (< 0.1s needed)</span>`;
+                        }
+                    }
+                }
+            }
+
+            drawClapScene();
+            requestAnimationFrame(animateClap);
+        }
+
+        document.getElementById('wallDistance').addEventListener('input', (e) => {
+            wallDist = parseInt(e.target.value);
+            document.getElementById('wallDistValue').textContent = `${wallDist} m`;
+            document.getElementById('clapResult').textContent = '';
+        });
+
+        document.getElementById('clapBtn').addEventListener('click', () => {
+            clapActive = true;
+            clapReturning = false;
+            clapWavePos = 0;
+            clapStartTime = Date.now();
+            clapTotalTime = 0;
+            document.getElementById('clapResult').textContent = '';
+        });
+
+        // ============================================
+        // REVERBERATION
+        // ============================================
+        const reverbCanvas = document.getElementById('reverbCanvas');
+        const rCtx = reverbCanvas.getContext('2d');
+
+        let reverbWaves = [];
+        let reverbTime = 0;
+        let hasCurtains = false;
+        let hasCarpet = false;
+        let hasPanels = false;
+
+        function getReverbLevel() {
+            let level = 3; // Base level (high)
+            if (hasCurtains) level--;
+            if (hasCarpet) level--;
+            if (hasPanels) level--;
+            return level;
+        }
+
+        function getAbsorption() {
+            let absorption = 0.3; // Base absorption
+            if (hasCurtains) absorption += 0.2;
+            if (hasCarpet) absorption += 0.2;
+            if (hasPanels) absorption += 0.25;
+            return Math.min(0.95, absorption);
+        }
+
+        function drawReverbRoom() {
+            // Room background
+            rCtx.fillStyle = '#2a2a3a';
+            rCtx.fillRect(0, 0, reverbCanvas.width, reverbCanvas.height);
+
+            // Floor
+            if (hasCarpet) {
+                rCtx.fillStyle = '#8d6e63';
+                rCtx.fillRect(50, reverbCanvas.height - 60, reverbCanvas.width - 100, 40);
+                // Carpet texture
+                rCtx.strokeStyle = '#795548';
+                for (let x = 60; x < reverbCanvas.width - 60; x += 20) {
+                    rCtx.beginPath();
+                    rCtx.moveTo(x, reverbCanvas.height - 55);
+                    rCtx.lineTo(x, reverbCanvas.height - 25);
+                    rCtx.stroke();
+                }
+            } else {
+                rCtx.fillStyle = '#5d4037';
+                rCtx.fillRect(50, reverbCanvas.height - 60, reverbCanvas.width - 100, 40);
+            }
+
+            // Walls
+            rCtx.fillStyle = '#555';
+            rCtx.fillRect(30, 30, 20, reverbCanvas.height - 90); // Left wall
+            rCtx.fillRect(reverbCanvas.width - 50, 30, 20, reverbCanvas.height - 90); // Right wall
+
+            // Ceiling
+            rCtx.fillStyle = '#444';
+            rCtx.fillRect(30, 20, reverbCanvas.width - 60, 20);
+
+            // Acoustic panels
+            if (hasPanels) {
+                rCtx.fillStyle = '#1a237e';
+                // Left wall panels
+                for (let y = 60; y < reverbCanvas.height - 100; y += 70) {
+                    rCtx.fillRect(35, y, 12, 50);
+                }
+                // Right wall panels
+                for (let y = 60; y < reverbCanvas.height - 100; y += 70) {
+                    rCtx.fillRect(reverbCanvas.width - 47, y, 12, 50);
+                }
+                // Ceiling panels
+                for (let x = 80; x < reverbCanvas.width - 80; x += 100) {
+                    rCtx.fillRect(x, 25, 60, 12);
+                }
+            }
+
+            // Curtains
+            if (hasCurtains) {
+                rCtx.fillStyle = '#7b1fa2';
+                // Left curtain
+                rCtx.fillRect(55, 40, 40, reverbCanvas.height - 110);
+                // Right curtain
+                rCtx.fillRect(reverbCanvas.width - 95, 40, 40, reverbCanvas.height - 110);
+
+                // Curtain folds
+                rCtx.strokeStyle = '#6a1b9a';
+                rCtx.lineWidth = 2;
+                for (let i = 0; i < 4; i++) {
+                    rCtx.beginPath();
+                    rCtx.moveTo(60 + i * 10, 40);
+                    rCtx.lineTo(60 + i * 10, reverbCanvas.height - 70);
+                    rCtx.stroke();
+
+                    rCtx.beginPath();
+                    rCtx.moveTo(reverbCanvas.width - 90 + i * 10, 40);
+                    rCtx.lineTo(reverbCanvas.width - 90 + i * 10, reverbCanvas.height - 70);
+                    rCtx.stroke();
+                }
+            }
+
+            // Speaker (sound source)
+            const speakerX = 450;
+            const speakerY = reverbCanvas.height - 120;
+
+            rCtx.fillStyle = '#333';
+            rCtx.fillRect(speakerX - 30, speakerY - 40, 60, 80);
+            rCtx.fillStyle = '#666';
+            rCtx.beginPath();
+            rCtx.arc(speakerX, speakerY - 10, 20, 0, Math.PI * 2);
+            rCtx.fill();
+            rCtx.beginPath();
+            rCtx.arc(speakerX, speakerY + 20, 10, 0, Math.PI * 2);
+            rCtx.fill();
+
+            // Generate new waves periodically
+            if (reverbTime % 30 < 1) {
+                reverbWaves.push({ radius: 30, opacity: 1, x: speakerX, y: speakerY });
+            }
+
+            // Draw and update waves
+            const absorption = getAbsorption();
+            for (let i = reverbWaves.length - 1; i >= 0; i--) {
+                const wave = reverbWaves[i];
+                wave.radius += 3;
+                wave.opacity -= absorption * 0.015;
+
+                if (wave.opacity <= 0 || wave.radius > 400) {
+                    reverbWaves.splice(i, 1);
+                    continue;
+                }
+
+                rCtx.strokeStyle = `rgba(255, 152, 0, ${wave.opacity})`;
+                rCtx.lineWidth = 2;
+                rCtx.beginPath();
+                rCtx.arc(wave.x, wave.y, wave.radius, 0, Math.PI * 2);
+                rCtx.stroke();
+
+                // Reflected waves (more if less absorption)
+                if (wave.radius > 100 && wave.opacity > 0.3) {
+                    const reflectionStrength = 1 - absorption;
+                    // Left wall reflection
+                    rCtx.strokeStyle = `rgba(76, 175, 80, ${wave.opacity * reflectionStrength * 0.5})`;
+                    rCtx.beginPath();
+                    rCtx.arc(50, wave.y, wave.radius - 80, -Math.PI / 2, Math.PI / 2);
+                    rCtx.stroke();
+
+                    // Right wall reflection
+                    rCtx.beginPath();
+                    rCtx.arc(reverbCanvas.width - 50, wave.y, wave.radius - 80, Math.PI / 2, Math.PI * 1.5);
+                    rCtx.stroke();
+                }
+            }
+
+            // Labels
+            rCtx.fillStyle = '#fff';
+            rCtx.font = 'bold 14px Arial';
+            rCtx.fillText('Concert Hall', reverbCanvas.width / 2 - 45, 60);
+        }
+
+        function animateReverb() {
+            reverbTime++;
+            drawReverbRoom();
+            requestAnimationFrame(animateReverb);
+        }
+
+        function updateReverbLevel() {
+            const level = getReverbLevel();
+            const levelDiv = document.getElementById('reverbLevel');
+            const labels = ['VERY LOW', 'LOW', 'MEDIUM', 'HIGH'];
+            const colors = ['#4caf50', '#8bc34a', '#ff9800', '#d32f2f'];
+            const messages = [
+                'Speech is crystal clear!',
+                'Good acoustics for speech.',
+                'Some echo, acceptable.',
+                'Speech is unclear!'
+            ];
+
+            levelDiv.innerHTML = `Reverberation Level: <span style="color: ${colors[level]};">${labels[level]}</span> - ${messages[level]}`;
+        }
+
+        document.getElementById('curtains').addEventListener('change', (e) => {
+            hasCurtains = e.target.checked;
+            updateReverbLevel();
+        });
+
+        document.getElementById('carpet').addEventListener('change', (e) => {
+            hasCarpet = e.target.checked;
+            updateReverbLevel();
+        });
+
+        document.getElementById('panels').addEventListener('change', (e) => {
+            hasPanels = e.target.checked;
+            updateReverbLevel();
+        });
+
+        // ============================================
+        // ROLLING THUNDER
+        // ============================================
+        const thunderCanvas = document.getElementById('thunderCanvas');
+        const tCtx = thunderCanvas.getContext('2d');
+
+        let lightningActive = false;
+        let lightningTime = 0;
+        let thunderWaves = [];
+
+        // Thunder audio
+        let thunderAudioContext = null;
+
+        function initThunderAudio() {
+            if (!thunderAudioContext) {
+                thunderAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return thunderAudioContext;
+        }
+
+        // Create a rumbling thunder sound
+        function playThunderSound(delay, volume = 0.3, duration = 0.4) {
+            setTimeout(() => {
+                const ctx = initThunderAudio();
+
+                // White noise for thunder rumble
+                const bufferSize = ctx.sampleRate * duration;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+
+                // Generate noise with low-frequency emphasis
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+                }
+
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                // Low-pass filter for rumbling effect
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 150 + Math.random() * 100;
+                filter.Q.value = 1;
+
+                // Gain for volume control
+                const gainNode = ctx.createGain();
+                gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+                noise.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(ctx.destination);
+
+                noise.start();
+                noise.stop(ctx.currentTime + duration);
+            }, delay);
+        }
+
+        // Play rolling thunder (multiple sounds at different delays)
+        function playRollingThunder() {
+            // Direct sound (loudest, first)
+            playThunderSound(80, 0.4, 0.5);
+
+            // Building reflection
+            playThunderSound(500, 0.3, 0.4);
+
+            // Mountain 1 reflection
+            playThunderSound(850, 0.25, 0.35);
+
+            // Mountain 2 reflection
+            playThunderSound(1350, 0.2, 0.3);
+
+            // Cloud reflection (quietest, last)
+            playThunderSound(1700, 0.15, 0.25);
+        }
+
+        function drawThunderScene() {
+            // Dark stormy sky
+            const gradient = tCtx.createLinearGradient(0, 0, 0, thunderCanvas.height);
+            gradient.addColorStop(0, '#1a1a2e');
+            gradient.addColorStop(0.5, '#2d3436');
+            gradient.addColorStop(1, '#1a1a2e');
+            tCtx.fillStyle = gradient;
+            tCtx.fillRect(0, 0, thunderCanvas.width, thunderCanvas.height);
+
+            // Clouds
+            tCtx.fillStyle = '#3d3d3d';
+            for (let i = 0; i < 5; i++) {
+                tCtx.beginPath();
+                tCtx.arc(100 + i * 180, 60, 50, 0, Math.PI * 2);
+                tCtx.arc(130 + i * 180, 40, 40, 0, Math.PI * 2);
+                tCtx.arc(160 + i * 180, 55, 45, 0, Math.PI * 2);
+                tCtx.fill();
+            }
+
+            // Mountains
+            tCtx.fillStyle = '#4a4a4a';
+            tCtx.beginPath();
+            tCtx.moveTo(0, thunderCanvas.height);
+            tCtx.lineTo(200, 150);
+            tCtx.lineTo(350, thunderCanvas.height);
+            tCtx.fill();
+
+            tCtx.beginPath();
+            tCtx.moveTo(300, thunderCanvas.height);
+            tCtx.lineTo(500, 180);
+            tCtx.lineTo(700, thunderCanvas.height);
+            tCtx.fill();
+
+            tCtx.fillStyle = '#555';
+            tCtx.beginPath();
+            tCtx.moveTo(550, thunderCanvas.height);
+            tCtx.lineTo(750, 160);
+            tCtx.lineTo(900, thunderCanvas.height);
+            tCtx.fill();
+
+            // Building
+            tCtx.fillStyle = '#333';
+            tCtx.fillRect(70, 220, 80, 130);
+            // Windows
+            tCtx.fillStyle = '#555';
+            for (let row = 0; row < 4; row++) {
+                for (let col = 0; col < 3; col++) {
+                    tCtx.fillRect(80 + col * 25, 230 + row * 30, 15, 20);
+                }
+            }
+
+            // Ground
+            tCtx.fillStyle = '#2d2d2d';
+            tCtx.fillRect(0, thunderCanvas.height - 50, thunderCanvas.width, 50);
+
+            // Lightning
+            if (lightningActive && lightningTime < 10) {
+                // Flash effect
+                tCtx.fillStyle = `rgba(255, 255, 255, ${0.3 - lightningTime * 0.03})`;
+                tCtx.fillRect(0, 0, thunderCanvas.width, thunderCanvas.height);
+
+                // Lightning bolt
+                tCtx.strokeStyle = '#fff';
+                tCtx.lineWidth = 3;
+                tCtx.beginPath();
+                tCtx.moveTo(450, 50);
+                tCtx.lineTo(430, 100);
+                tCtx.lineTo(460, 110);
+                tCtx.lineTo(420, 180);
+                tCtx.lineTo(470, 170);
+                tCtx.lineTo(440, 250);
+                tCtx.stroke();
+
+                // Glow
+                tCtx.strokeStyle = 'rgba(255, 255, 200, 0.5)';
+                tCtx.lineWidth = 10;
+                tCtx.stroke();
+            }
+
+            // Thunder sound waves from multiple reflection points
+            for (let i = thunderWaves.length - 1; i >= 0; i--) {
+                const wave = thunderWaves[i];
+                wave.radius += 2;
+                wave.opacity -= 0.008;
+
+                if (wave.opacity <= 0) {
+                    thunderWaves.splice(i, 1);
+                    continue;
+                }
+
+                // Color based on source
+                let color;
+                switch (wave.source) {
+                    case 'direct': color = `rgba(255, 200, 0, ${wave.opacity})`; break;
+                    case 'mountain1': color = `rgba(255, 100, 100, ${wave.opacity})`; break;
+                    case 'mountain2': color = `rgba(100, 255, 100, ${wave.opacity})`; break;
+                    case 'building': color = `rgba(100, 100, 255, ${wave.opacity})`; break;
+                    case 'cloud': color = `rgba(255, 100, 255, ${wave.opacity})`; break;
+                }
+
+                tCtx.strokeStyle = color;
+                tCtx.lineWidth = 2;
+                tCtx.beginPath();
+                tCtx.arc(wave.x, wave.y, wave.radius, 0, Math.PI * 2);
+                tCtx.stroke();
+            }
+
+            // Labels for reflection sources
+            if (lightningActive && lightningTime > 20) {
+                tCtx.fillStyle = '#888';
+                tCtx.font = '12px Arial';
+                tCtx.fillText('Direct sound (first)', 400, 270);
+                tCtx.fillText('Mountain reflection', 180, 140);
+                tCtx.fillText('Building reflection', 50, 210);
+                tCtx.fillText('Cloud reflection', 400, 30);
+            }
+
+            // Info text
+            tCtx.fillStyle = '#fff';
+            tCtx.font = 'bold 14px Arial';
+            tCtx.fillText('Thunder "rolls" because sound reflects from multiple surfaces at different distances', 150, thunderCanvas.height - 20);
+        }
+
+        function animateThunder() {
+            if (lightningActive) {
+                lightningTime++;
+
+                // Generate waves at different times (simulating different distances)
+                if (lightningTime === 5) {
+                    thunderWaves.push({ x: 440, y: 250, radius: 10, opacity: 1, source: 'direct' });
+                }
+                if (lightningTime === 30) {
+                    thunderWaves.push({ x: 110, y: 250, radius: 10, opacity: 0.8, source: 'building' });
+                }
+                if (lightningTime === 50) {
+                    thunderWaves.push({ x: 200, y: 150, radius: 10, opacity: 0.7, source: 'mountain1' });
+                }
+                if (lightningTime === 80) {
+                    thunderWaves.push({ x: 500, y: 180, radius: 10, opacity: 0.6, source: 'mountain2' });
+                }
+                if (lightningTime === 100) {
+                    thunderWaves.push({ x: 450, y: 50, radius: 10, opacity: 0.5, source: 'cloud' });
+                }
+
+                if (lightningTime > 200) {
+                    lightningActive = false;
+                }
+            }
+
+            drawThunderScene();
+            requestAnimationFrame(animateThunder);
+        }
+
+        document.getElementById('triggerLightning').addEventListener('click', () => {
+            lightningActive = true;
+            lightningTime = 0;
+            thunderWaves = [];
+
+            // Play rolling thunder sound
+            playRollingThunder();
+        });
+
+        // ============================================
+        // Initialize all animations
+        // ============================================
+        updateEchoStatus();
+        animateSound();
+        animateClap();
+        animateReverb();
+        animateThunder();
+    </script>
+</body>
+</html>
